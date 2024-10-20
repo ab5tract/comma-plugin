@@ -605,4 +605,9 @@ public final class RakuHighlighter {
             UNUSED_ID,
             CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES
     );
+
+    private static final String ALT_WARNING_ID = "RAKU_ALT_WARNING";
+    public static final TextAttributesKey ALT_WARNING = TextAttributesKey.createTextAttributesKey(
+        ALT_WARNING_ID
+    );
 }

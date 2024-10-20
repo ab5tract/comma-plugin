@@ -10,6 +10,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiEditorUtil
+import org.raku.comma.psi.RakuLongName
+import org.raku.comma.psi.RakuRoutineDecl
 import org.raku.comma.psi.external.RakuExternalPsiElement
 
 abstract class RakuInspection : LocalInspectionTool() {
@@ -48,5 +50,20 @@ abstract class RakuInspection : LocalInspectionTool() {
                                                range.endOffset,
                                                layer,
                                                HighlighterTargetArea.EXACT_RANGE)
+    }
+
+    protected fun highlightTextRange(element: RakuRoutineDecl): TextRange {
+        val end = element.textOffset + element.declaratorNode.textLength + element.signature.length - 2
+        return TextRange(element.declaratorNode.textOffset, end)
+    }
+
+    protected fun highlightTextRange(element: RakuLongName): TextRange {
+        return TextRange(element.textOffset, element.textOffset + element.textRange.length)
+    }
+
+    protected fun removeHighlighters(element: PsiElement) {
+        val editor = PsiEditorUtil.findEditor(element) ?: return
+        editor.markupModel.allHighlighters.filter { highlighter -> highlighter.textRange == element.textRange }
+                                          .forEach { highlighter -> editor.markupModel.removeHighlighter(highlighter) }
     }
 }

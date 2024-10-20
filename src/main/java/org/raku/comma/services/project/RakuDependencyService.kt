@@ -48,11 +48,6 @@ class RakuDependencyService(private val project: Project, private val runScope: 
             if (isNotRefreshing) {
                 var newState = state ?: moduleDetailsState.copy()
                 isRefreshing = true
-//                runScope.future {
-////                    newState = moduleListFetcher.fillState(newState)
-//                    newState = dependencyDetails.fillState(newState)
-//                }.join()
-
                 runScope.future {
                     newState = dependencyDetails.fillState(newState)
                     moduleDetailsState = dependencyDetails.dependenciesToRakuFiles(newState).await()

@@ -74,9 +74,4 @@ class UnusedRoutineInspection : RakuInspection() {
             }
         }
     }
-
-    private fun highlightTextRange(element: RakuRoutineDecl): TextRange {
-        val end = element.textOffset + element.declaratorNode.textLength + element.signature.length - 2
-        return TextRange(element.declaratorNode.textOffset, end)
-    }
 }

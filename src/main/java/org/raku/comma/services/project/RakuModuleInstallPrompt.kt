@@ -10,14 +10,35 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.ui.EditorNotificationPanel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineScope
 import org.raku.comma.pm.RakuPackageManager
 import org.raku.comma.pm.RakuPackageManagerManager
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.event.HyperlinkEvent
 
 @Service(Service.Level.PROJECT)
-class RakuModuleInstallPromptStarter(private val project: Project) {
+class RakuModuleInstallPrompt(private val project: Project, val runScope: CoroutineScope) {
+
+    fun install(module: String): CompletableFuture<Boolean> {
+        val pm = project.service<RakuPackageManagerManager>().currentPM ?: return CompletableFuture.completedFuture(false)
+
+        val completable = CompletableFuture<Boolean>()
+        ApplicationManager.getApplication().executeOnPooledThread {
+            try {
+                pm.addInstall(module)
+                pm.install()
+                completable.complete(true)
+            } catch (e: ExecutionException) {
+                LOG.warn("Could not install a distribution: " + e.message)
+                completable.completeExceptionally(e)
+            }
+        }
+        return completable
+    }
 
     // Can only be usefully called *after* the dependency information is loaded.
     // However, we don't check for this directly because we call it as the last
@@ -31,7 +52,7 @@ class RakuModuleInstallPromptStarter(private val project: Project) {
 
         val dependencyService = project.service<RakuDependencyService>()
         val loadedDependencies =  dependencyService.moduleDetails.provideToRakuFile.keys
-        // TODO: There might be some distributions that don't install a module of their name?
+        // There can be some distributions that don't install a module of their name
         val unavailableDeps = dependencies.filterNot { module ->
             if (loadedDependencies.contains(module)) return@filterNot true
             val provides = dependencyService.moduleDetails.ecoModuleToProvides[module] ?: listOf()
@@ -66,7 +87,7 @@ class RakuModuleInstallPromptStarter(private val project: Project) {
 
     companion object {
         val LOG = Logger.getInstance(
-            RakuModuleInstallPromptStarter::class.java
+            RakuModuleInstallPrompt::class.java
         )
     }
 

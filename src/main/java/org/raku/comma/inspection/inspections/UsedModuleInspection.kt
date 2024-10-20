@@ -1,14 +1,18 @@
 package org.raku.comma.inspection.inspections
 
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.components.service
+import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.psi.util.PsiTreeUtil
-import org.raku.comma.inspection.InspectionConstants.UsedModuleInspection.DESCRIPTION_ECO_FORMAT
-import org.raku.comma.inspection.InspectionConstants.UsedModuleInspection.DESCRIPTION_META6_FORMAT
+import org.raku.comma.highlighter.RakuHighlighter
+import org.raku.comma.inspection.InspectionConstants.UsedModuleInspection.*
 import org.raku.comma.inspection.RakuInspection
 import org.raku.comma.inspection.fixes.CreateLocalModuleFix
+import org.raku.comma.inspection.fixes.InstallMissingDependencyFix
 import org.raku.comma.inspection.fixes.MissingModuleFix
 import org.raku.comma.psi.RakuColonPair
 import org.raku.comma.psi.RakuLongName
@@ -16,12 +20,18 @@ import org.raku.comma.psi.RakuModuleName
 import org.raku.comma.services.project.RakuDependencyService
 import org.raku.comma.services.RakuServiceConstants
 import org.raku.comma.services.project.RakuMetaDataComponent
+import org.raku.comma.utils.CommaProjectUtil
 
 class UsedModuleInspection : RakuInspection() {
     override fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement) {
+        val project = holder.project
+
+        // There is no point in doing this highlighting prior to the loading of dependency information
+        val moduleDetails = project.service<RakuDependencyService>()
+        if (moduleDetails.isNotInitialized) return
+
         if (element !is RakuModuleName) return
 
-        val project = holder.project
         val moduleNameNode = PsiTreeUtil.findChildOfType(element, RakuLongName::class.java) ?: return
         val moduleName = moduleNameNode.firstChild.text
 
@@ -39,12 +49,23 @@ class UsedModuleInspection : RakuInspection() {
         if (RakuServiceConstants.PRAGMAS.contains(moduleName)) return
 
         val metadata = project.service<RakuMetaDataComponent>()
-        val moduleDetails = project.service<RakuDependencyService>()
-        if (checkDependency(moduleName, metadata, moduleDetails, element, holder.file.virtualFile)) return
+        if (checkDependency(moduleName, metadata, moduleDetails, element, holder.file.virtualFile)) {
+            removeHighlighters(moduleNameNode)
+            return
+        }
 
-        val holderPackage = project.service<RakuDependencyService>().moduleByProvide(moduleName)
+        val holderPackage = moduleDetails.moduleByProvide(moduleName)
         if (holderPackage != null) {
-            holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), MissingModuleFix(moduleName))
+            if (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName)) {
+                val editor = PsiEditorUtil.findEditor(element) ?: return
+                customHighlight(editor, highlightTextRange(moduleNameNode), RakuHighlighter.ALT_WARNING, HighlighterLayer.ERROR)
+                holder.registerProblem(element,
+                                       DESCRIPTION_IN_META6_BUT_MISSING_FORMAT.format(moduleName),
+                                       ProblemHighlightType.WARNING,
+                                       *arrayOf(InstallMissingDependencyFix(moduleName)))
+            } else {
+                holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), MissingModuleFix(moduleName))
+            }
         } else {
             holder.registerProblem(element, DESCRIPTION_ECO_FORMAT.format(moduleName), CreateLocalModuleFix(moduleName))
         }
@@ -58,7 +79,8 @@ class UsedModuleInspection : RakuInspection() {
         file: VirtualFile
     ): Boolean {
         return  metadata.providedNames.contains(moduleName)
-                || (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName))
+                || (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName)
+                    && moduleDetails.moduleDetails.provideToRakuFile[moduleName] != null)
                 || (file.url.startsWith("mock://") && element.reference?.resolve() != null)
     }
 }

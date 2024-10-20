@@ -7,7 +7,7 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportProgress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.raku.comma.services.project.RakuModuleInstallPromptStarter
+import org.raku.comma.services.project.RakuModuleInstallPrompt
 import org.raku.comma.pm.RakuPackageManagerManager
 import org.raku.comma.services.application.RakuEcosystem
 import org.raku.comma.services.project.RakuMetaDataComponent
@@ -36,6 +36,6 @@ class RakuServiceStarter : ProjectActivity {
         if (!metaLoaded) return
 
         project.service<RakuDependencyService>().initialize().join()
-        project.service<RakuModuleInstallPromptStarter>().installMissing()
+        project.service<RakuModuleInstallPrompt>().installMissing()
     }
 }
