@@ -26,14 +26,24 @@ class UsedModuleInspection : RakuInspection() {
     override fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement) {
         val project = holder.project
 
-        // There is no point in doing this highlighting prior to the loading of dependency information
-        val moduleDetails = project.service<RakuDependencyService>()
-        if (moduleDetails.isNotInitialized) return
-
         if (element !is RakuModuleName) return
 
         val moduleNameNode = PsiTreeUtil.findChildOfType(element, RakuLongName::class.java) ?: return
         val moduleName = moduleNameNode.firstChild.text
+
+        // There is no point in doing this highlighting prior to the loading of dependency information
+        // ... but let's default to marking them as warnings when not in the provides list
+        val metadata = project.service<RakuMetaDataComponent>()
+        val moduleDetails = project.service<RakuDependencyService>()
+        if (moduleDetails.isNotInitialized) {
+            if (! metadata.providedNames.contains(moduleName)) {
+                holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), ProblemHighlightType.WARNING)
+            }
+            return
+        }
+
+        // The situation may have changed, so remove all custom highlighters
+        removeHighlighters(moduleNameNode)
 
         val params = PsiTreeUtil.findChildrenOfType(moduleNameNode, RakuColonPair::class.java)
         for (colonPair in params) {
@@ -48,11 +58,7 @@ class UsedModuleInspection : RakuInspection() {
         // ... or pragmas ...
         if (RakuServiceConstants.PRAGMAS.contains(moduleName)) return
 
-        val metadata = project.service<RakuMetaDataComponent>()
-        if (checkDependency(moduleName, metadata, moduleDetails, element, holder.file.virtualFile)) {
-            removeHighlighters(moduleNameNode)
-            return
-        }
+        if (checkDependency(moduleName, metadata, moduleDetails, element, holder.file.virtualFile)) return
 
         val holderPackage = moduleDetails.moduleByProvide(moduleName)
         if (holderPackage != null) {
