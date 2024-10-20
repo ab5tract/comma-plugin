@@ -191,4 +191,12 @@
       <option name="EFFECT_TYPE" value="1" />
     </value>
   </option>
+  <!-- TODO: Match this up with the genuine blue from the default scheme -->
+  <option name="RAKU_ALT_WARNING">
+    <value>
+      <option name="EFFECT_COLOR" value="56A8F5" />
+      <option name="ERROR_STRIPE_COLOR" value="56A8F5" />
+      <option name="EFFECT_TYPE" value="2" />
+    </value>
+  </option>
 </list>
