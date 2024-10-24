@@ -31,7 +31,7 @@ object CommaProjectUtil {
     // own META6.json. Fix this later!
     @JvmStatic
     fun projectDependencies(project: Project): List<String> {
-        return if (projectHasMetaFile(project)) metaFile(project).depends else listOf()
+        return if (projectHasMetaFile(project)) metaFile(project).depends.map { RakuUtils.stripAuthVerApi(it) } else listOf()
     }
 
     private val json = Json {

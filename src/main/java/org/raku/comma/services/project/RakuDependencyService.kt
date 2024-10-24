@@ -115,8 +115,6 @@ class RakuDependencyService(private val project: Project, private val runScope: 
         // Look up the module via provides and try resolving that way
         val module = moduleByProvide(provide) ?: return false
 
-        if (currentDirect.contains(module)) return true
-
         // Otherwise check whether the metaFile contents are different
         val metaDirect = CommaProjectUtil.projectDependencies(project).toSet()
         if (moduleDetailsState.directDependencies.toSet() != metaDirect) {
