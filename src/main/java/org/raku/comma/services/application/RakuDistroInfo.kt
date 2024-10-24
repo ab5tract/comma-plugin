@@ -13,7 +13,7 @@ import org.raku.comma.utils.RakuUtils
 @Service(Service.Level.APP)
 @State(name = "Raku.Distro", storages = [ Storage(RakuServiceConstants.APP_RAKU_DISTRO, roamingType = RoamingType.DISABLED) ])
 class RakuDistroInfo(val runScope: CoroutineScope) : PersistentStateComponent<RakuDistroInfoState> {
-    private var distroState = determineDistroName()
+    private var distroState = RakuDistroInfoState()
 
     val distroName: String
         get() = distroState.distroName ?: ""
@@ -39,7 +39,9 @@ class RakuDistroInfo(val runScope: CoroutineScope) : PersistentStateComponent<Ra
     }
 
     override fun loadState(state: RakuDistroInfoState) {
-        distroState = state
+        distroState =   if (state.distroName.isNullOrEmpty())
+                            determineDistroName()
+                        else state
     }
 }
 

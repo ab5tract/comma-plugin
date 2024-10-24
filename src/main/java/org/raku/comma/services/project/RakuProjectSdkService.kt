@@ -12,6 +12,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
 import org.json.JSONArray
 import org.json.JSONException
+import org.raku.comma.pm.RakuPackageManager
+import org.raku.comma.pm.impl.RakuZefPM
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.psi.RakuPackageDecl
 import org.raku.comma.psi.RakuPsiElement
@@ -28,9 +30,12 @@ import org.raku.comma.utils.RakuCommandLine
 import org.raku.comma.utils.RakuUtils
 import java.io.IOException
 import java.nio.file.Files
+import java.nio.file.InvalidPathException
+import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.io.path.exists
 
 /**
  * When the Raku plugin is used in products such as IDEA or Webstorm,
@@ -54,6 +59,9 @@ class RakuProjectSdkService(
     var sdkPath: String?
         get() = getState().projectSdkPath
         set(newPath) = setProjectSdkPath(newPath!!)
+
+    val rakuPath: String?
+        get() = if (sdkPath != null) sdkPath!! + "/raku" else null
 
     val sdkName: String
         get() = "Raku ${sdkState.projectSdkVersion ?: "<UNKNOWN>"}"
@@ -80,6 +88,9 @@ class RakuProjectSdkService(
     }
 
     override fun loadState(rakuSDKState: RakuSDKState) {
+        if (rakuSDKState.projectZefPath.isNullOrEmpty() && sdkIsSet) {
+            rakuSDKState.projectZefPath = calculateZefPath(sdkPath!!)
+        }
         sdkState = rakuSDKState
     }
 
@@ -92,9 +103,19 @@ class RakuProjectSdkService(
         }.await()
     }
 
+    fun calculateZefPath(sdkPath: String): String {
+        if (sdkPath.isBlank()) return ""
+        try {
+            val resolution = Path.of(sdkPath).parent.resolve("share/perl6/site/bin/zef")
+            return if (resolution.exists()) resolution.toString() else ""
+        } catch (_: InvalidPathException) {}
+        return ""
+    }
+
     fun setProjectSdkPath(sdkPath: String) {
         sdkState.projectSdkPath    = sdkPath
         sdkState.projectSdkVersion = RakuSdkUtil.versionString(sdkPath)
+        sdkState.projectZefPath    = calculateZefPath(sdkPath)
 
         symbolCache.sdkPath = sdkPath
         symbolCache.invalidateCache()
@@ -106,6 +127,14 @@ class RakuProjectSdkService(
 //        }
         project.service<RakuMetaDataComponent>().triggerMetaBuild()
     }
+
+    val zef: RakuPackageManager?
+        get() {
+            val zefPath = calculateZefPath(sdkPath ?: "")
+            return  if (zefPath.isNotEmpty())
+                        RakuZefPM(project, zefPath)
+                    else null
+        }
 
     private fun generateMoarBuildConfiguration(): Map<String, String> {
         val subs: List<String>
@@ -143,6 +172,7 @@ class RakuProjectSdkService(
 class RakuSDKState : BaseState() {
     var projectSdkPath by string()
     var projectSdkVersion by string()
+    var projectZefPath by string()
 }
 
 private class ProjectSymbolCache() {

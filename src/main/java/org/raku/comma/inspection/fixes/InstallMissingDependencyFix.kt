@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import org.raku.comma.services.project.RakuDependencyService
 import org.raku.comma.services.project.RakuModuleInstallPrompt
 import org.raku.comma.services.project.RakuProjectDetailsService
+import org.raku.comma.utils.CommaProjectUtil
 
 class InstallMissingDependencyFix(private val moduleName: String) : LocalQuickFix {
 
@@ -17,11 +18,9 @@ class InstallMissingDependencyFix(private val moduleName: String) : LocalQuickFi
         val installer = project.service<RakuModuleInstallPrompt>()
 
         installer.runScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Default) {
                 installer.install(moduleName).join()
-                val projectDetails = project.service<RakuProjectDetailsService>()
-                projectDetails.moduleServiceDidStartup = false
-                project.service<RakuDependencyService>().initialize().join()
+                CommaProjectUtil.refreshProjectState(project)
             }
         }
     }

@@ -10,8 +10,8 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.components.JBScrollPane;
 import net.miginfocom.swing.MigLayout;
-import org.raku.comma.utils.ZefCommandLine;
-import org.raku.comma.utils.ZefCommandLineOutputTextPane;
+import org.raku.comma.utils.zef.ZefCommandLine;
+import org.raku.comma.utils.zef.ZefCommandLineOutputTextPane;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class RakuPMWidget {
@@ -28,7 +29,7 @@ public class RakuPMWidget {
     private static ToolWindow myToolWindow;
     private static JComponent myComponent;
 
-    public static int initAndRun(Project project, ZefCommandLine command) {
+    public static int initAndRun(Project project, ZefCommandLine command, CompletableFuture<Integer> completion) {
 
         outputPane.setEditable(false);
         if (myComponent == null) {
@@ -40,24 +41,35 @@ public class RakuPMWidget {
         if (myToolWindow == null) {
             ApplicationManager.getApplication().invokeAndWait(() -> {
                 myToolWindow = twm.registerToolWindow(new RegisterToolWindowTask(
-                    "Raku PM Widget",
-                    ToolWindowAnchor.BOTTOM,
-                    myComponent,
-                    false,
-                    true,
-                    false,
-                    true,
-                    null,
-                    null,
-                    supplier
+                        "Raku PM Widget",
+                        ToolWindowAnchor.BOTTOM,
+                        myComponent,
+                        false,
+                        true,
+                        false,
+                        true,
+                        null,
+                        null,
+                        supplier
                 ));
             });
         }
         ApplicationManager.getApplication().invokeAndWait(() -> myToolWindow.activate(null, true));
         try {
-            return ApplicationManager.getApplication().executeOnPooledThread(() -> executeProcess(command)).get();
-        }
-        catch (InterruptedException | java.util.concurrent.ExecutionException e) {
+            return ApplicationManager.getApplication().executeOnPooledThread(
+                    () -> {
+                        if (command.isSetup()) {
+                            var status = executeProcess(command);
+                            if (completion != null) {
+                                completion.complete(status);
+                            }
+                            return status;
+                        } else {
+                            return -1;
+                        }
+                    }
+            ).get();
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             LOG.warn(e);
         }
         return -1;
@@ -95,8 +107,7 @@ public class RakuPMWidget {
             }
 
             return exitCode;
-        }
-        catch (ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             LOG.warn(e);
         }
         return -1;

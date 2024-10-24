@@ -44,8 +44,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         removeOldCommaProjectFiles(nioPath)
 
         val isValidIdeaProject = ProjectUtilCore.isValidProjectPath(nioPath)
-        val options = OpenProjectTask(
-            true, projectToClose, !isValidIdeaProject, isValidIdeaProject
+        val options = OpenProjectTask(true, projectToClose, !isValidIdeaProject, isValidIdeaProject
         )
         val project = ProjectManagerEx.getInstanceEx().openProject(nioPath, options)
         if (project != null) {
@@ -59,7 +58,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     override suspend fun importProjectAfterwardsAsync(project: Project, file: VirtualFile) {
         val projectBuilder = RakuProjectBuilder()
         projectBuilder.fileToImport = file.toString()
-        projectBuilder.commit(project, null, null)
+        projectBuilder.commit(project, null)
     }
 
     override fun canImportProjectAfterwards(): Boolean {

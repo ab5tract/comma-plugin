@@ -13,7 +13,7 @@ my sub parse-value($str-or-kv) {
         when Pair { $_.key     }
     }
 }
-
+#BEGIN die Zef::Config::guess-path();
 my $config = Zef::Config::parse-file(Zef::Config::guess-path());
 my $client = Zef::Client.new(:$config);
 

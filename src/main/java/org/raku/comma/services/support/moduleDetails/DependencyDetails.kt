@@ -25,6 +25,7 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
 
     // This should *only* be called by the RakuDependencyService.doInitialize()
     fun dependenciesToRakuFiles(state: ModuleDetailsState): Deferred<ModuleDetailsState> {
+        if (project.service<RakuProjectSdkService>().zef == null) return CompletableDeferred(state)
         return runScope.async {
             fillProvidesToRakuFiles(state)
         }
@@ -59,8 +60,10 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
         }
 
         // TODO: Prompt to install missing dependencies
-        return state.copy(dependencyToPath  = finalToPath,
-                          provideToRakuFile = newToRakuFileLookup)
+        return state.copy(
+            dependencyToPath = finalToPath,
+            provideToRakuFile = newToRakuFileLookup
+        )
     }
 
     @Synchronized
@@ -96,6 +99,7 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
         }
         provideMap.keys.forEach { references.remove(it) }
 
+        var output: String = ""
         return runScope.future {
             try {
                 val locateScript = RakuUtils.getResourceAsFile("scripts/absolute-path-of-module.raku")
@@ -103,13 +107,13 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
                 val pathCollectorScript = RakuCommandLine(sdkHome)
                 pathCollectorScript.addParameter(locateScript.absolutePath)
                 references.forEach { reference -> pathCollectorScript.addParameter(reference) }
-                val output = pathCollectorScript.executeAndRead(null).joinToString("\n")
+                output = pathCollectorScript.executeAndRead(null).joinToString("\n")
                 // TODO: Do something with the notInstalled details
                 val result = Json.decodeFromString<PathLookupResult>(output)
                 provideMap.putAll(result.pathLookup)
                 return@future provideMap
-            } catch (e: ExecutionException) {
-                RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
+            } catch (e: Exception) {
+                RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK ${e.message!!}")
                 return@future mapOf()
             }
         }.join()
@@ -118,8 +122,8 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
     private fun dependenciesDeep(state: ModuleDetailsState, modules: Set<String>): Set<String> {
         val find = { moduleSet: Set<String> ->
             moduleSet.mapNotNull { state.ecosystemRepository[it] }
-                     .flatMap   { listOf(listOf(it.name!!), it.depends.map(RakuUtils::stripAuthVerApi)).flatten() }
-                     .toMutableSet()
+                .flatMap { listOf(listOf(it.name!!), it.depends.map(RakuUtils::stripAuthVerApi)).flatten() }
+                .toMutableSet()
         }
 
         val seen = find(modules)
@@ -134,7 +138,7 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
         return seen.toSet()
     }
 
-   private fun createModulePsiFile(project: Project, name: String, path: String): Deferred<RakuFileWrapper> {
+    private fun createModulePsiFile(project: Project, name: String, path: String): Deferred<RakuFileWrapper> {
         return runScope.async {
             withBackgroundProgress(project, "Loading modules...") {
                 reportProgress { reporter ->

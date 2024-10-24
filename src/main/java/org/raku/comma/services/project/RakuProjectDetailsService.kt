@@ -23,6 +23,11 @@ class RakuProjectDetailsService(
     val noModuleServiceDidNotStartup: Boolean
         get() = !moduleServiceDidStartup
 
+    private val missingDependencyNotificationStatus = AtomicBoolean(false)
+    var hasNotifiedMissingDependencies: Boolean
+        get() = missingDependencyNotificationStatus.get()
+        set(value) { missingDependencyNotificationStatus.set(value) }
+
     // Detail:  isProjectProjectRakudoCore
     // Purpose: To allow toggling certain annotations and other features that make sense in regular
     //          Raku projects but which make hacking on the Rakudo internals annoying.

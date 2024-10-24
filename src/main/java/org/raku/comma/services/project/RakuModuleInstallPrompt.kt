@@ -10,12 +10,13 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.ui.EditorNotificationPanel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.raku.comma.pm.RakuPackageManager
-import org.raku.comma.pm.RakuPackageManagerManager
-import java.util.*
+import org.raku.comma.pm.impl.RakuZefPM
+import org.raku.comma.utils.CommaProjectUtil
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.event.HyperlinkEvent
@@ -24,7 +25,7 @@ import javax.swing.event.HyperlinkEvent
 class RakuModuleInstallPrompt(private val project: Project, val runScope: CoroutineScope) {
 
     fun install(module: String): CompletableFuture<Boolean> {
-        val pm = project.service<RakuPackageManagerManager>().currentPM ?: return CompletableFuture.completedFuture(false)
+        val pm = project.service<RakuProjectSdkService>().zef ?: return CompletableFuture.completedFuture(false)
 
         val completable = CompletableFuture<Boolean>()
         ApplicationManager.getApplication().executeOnPooledThread {
@@ -40,12 +41,36 @@ class RakuModuleInstallPrompt(private val project: Project, val runScope: Corout
         return completable
     }
 
+    fun installZefItself(): CompletableFuture<Int> {
+        val completable = CompletableFuture<Int>()
+        val pm = RakuZefPM(project)
+
+        val editors = FileEditorManager.getInstance(project).selectedEditors
+        ApplicationManager.getApplication().invokeAndWait {
+            for (fileEditor in editors) {
+                val notification = getPanelZefItselfInstall(pm, completable)
+                FileEditorManager.getInstance(project).addTopComponent(fileEditor!!, notification)
+                notification.setDismissCallback {
+                    if (! completable.isDone) {
+                        completable.complete(-1);
+                    }
+                    FileEditorManager.getInstance(project).removeTopComponent(fileEditor, notification)
+                }
+            }
+        }
+
+        return completable
+    }
+
     // Can only be usefully called *after* the dependency information is loaded.
     // However, we don't check for this directly because we call it as the last
     // stage of initializing the dependency service.
     fun installMissing() {
-        val pmManager = project.service<RakuPackageManagerManager>()
-        val currentPM = pmManager.currentPM ?: return
+        val projectDetailsService = project.service<RakuProjectDetailsService>()
+        if (projectDetailsService.hasNotifiedMissingDependencies) return
+        projectDetailsService.hasNotifiedMissingDependencies = true
+
+        val currentPM = project.service<RakuProjectSdkService>().zef ?: return
 
         val metadata = project.service<RakuMetaDataComponent>()
         val dependencies = metadata.allDependencies
@@ -58,13 +83,12 @@ class RakuModuleInstallPrompt(private val project: Project, val runScope: Corout
             val provides = dependencyService.moduleDetails.ecoModuleToProvides[module] ?: listOf()
             return@filterNot loadedDependencies.containsAll(provides)
         }
-
         if (unavailableDeps.isEmpty()) return
         // Report if there are modules to install
         val editors = FileEditorManager.getInstance(project).selectedEditors
         ApplicationManager.getApplication().invokeAndWait {
             for (fileEditor in editors) {
-                val notification = getPanel(currentPM, unavailableDeps)
+                val notification = getPanelModuleInstall(currentPM as RakuZefPM, unavailableDeps)
                 FileEditorManager.getInstance(project).addTopComponent(fileEditor!!, notification)
                 notification.setDismissCallback {
                     FileEditorManager.getInstance(project).removeTopComponent(fileEditor, notification)
@@ -91,13 +115,28 @@ class RakuModuleInstallPrompt(private val project: Project, val runScope: Corout
         )
     }
 
-    private fun getPanel(pm: RakuPackageManager, unavailableDeps: List<String>): DismissableNotificationPanel {
+    private fun getPanelZefItselfInstall(pm: RakuZefPM, completion: CompletableFuture<Int>): DismissableNotificationPanel {
+        val sdkName = project.service<RakuProjectSdkService>().sdkName
+        val panelFormat = "No 'zef' found in environment path for SDK version $sdkName"
+        val installButtonFormat = "Install zef"
+        return getPanel(pm, emptyList(), panelFormat, installButtonFormat, { pm.installPackageManager(completion) })
+    }
+
+    private fun getPanelModuleInstall(pm: RakuZefPM, arguments: List<String>): DismissableNotificationPanel {
+        val panelText = "Some Raku dependencies for this project are not installed (${arguments.joinToString(", ") })."
+        val installButtonText = "Install missing dependencies"
+        return getPanel(pm, arguments, panelText, installButtonText, { pm.installEach(); 0 })
+    }
+
+    private fun getPanel(
+        pm: RakuPackageManager,
+        arguments: List<String>,
+        panelText: String,
+        installButtonText: String,
+        installClosure: () -> Int,
+    ): DismissableNotificationPanel {
         val panel = DismissableNotificationPanel()
-        panel.text =
-            "Some Raku dependencies for this project are not installed (" + getListText(
-                unavailableDeps
-            ) + ")."
-        val installButtonText = "Install with " + pm.kind.name.lowercase(Locale.getDefault())
+        panel.text = panelText
         val startedProcessing = AtomicBoolean(false)
         panel.createActionLabel(installButtonText, object : EditorNotificationPanel.ActionHandler {
             override fun handlePanelActionClick(panel: EditorNotificationPanel, event: HyperlinkEvent) {
@@ -106,11 +145,16 @@ class RakuModuleInstallPrompt(private val project: Project, val runScope: Corout
 
                 panel.text += " Installing..."
                 ApplicationManager.getApplication().executeOnPooledThread {
-                    unavailableDeps.forEach { dep ->
+                    arguments.forEach { dep ->
                         pm.addInstall(dep)
                     }
                     try {
-                        pm.installEach()
+                        installClosure.invoke()
+                        runScope.launch {
+                            withContext(Dispatchers.Default) {
+                                CommaProjectUtil.refreshProjectState(project)
+                            }
+                        }
                     } catch (e: ExecutionException) {
                         LOG.warn("Could not install a distribution: " + e.message)
                     }
@@ -122,18 +166,5 @@ class RakuModuleInstallPrompt(private val project: Project, val runScope: Corout
             override fun handleQuickFixClick(editor: Editor, psiFile: PsiFile) {}
         }, true)
         return panel
-    }
-
-    private fun getListText(deps: List<String>): String {
-        val joiner = StringJoiner(", ")
-        var complete = true
-        for (dep in deps) {
-            joiner.add(dep)
-            if (joiner.length() > 80) {
-                complete = false
-                break
-            }
-        }
-        return joiner.toString() + (if (complete) "" else "...")
     }
 }
