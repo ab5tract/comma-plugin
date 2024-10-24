@@ -36,7 +36,7 @@ class UsedModuleInspection : RakuInspection() {
         val metadata = project.service<RakuMetaDataComponent>()
         val moduleDetails = project.service<RakuDependencyService>()
         if (moduleDetails.isNotInitialized) {
-            if (! metadata.providedNames.contains(moduleName)) {
+            if (! CommaProjectUtil.projectProvides(project).contains(moduleName)) {
                 holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), ProblemHighlightType.WARNING)
             }
             return

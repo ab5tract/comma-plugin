@@ -32,6 +32,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.raku.comma.RakuIcons
 import org.raku.comma.metadata.data.MetaFile
+import org.raku.comma.utils.RakuUtils
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
@@ -233,14 +234,14 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
         get() = meta?.allDepends?.toSet() ?: setOf()
 
     val depends: List<String>
-        get() =  meta?.depends ?: listOf()
+        get() =  meta?.depends?.map { RakuUtils.stripAuthVerApi(it) } ?: listOf()
 
     // More never-used functionality in Old Comma
     val testDepends: List<String>
-        get() = meta?.testDepends ?: listOf()
+        get() = meta?.testDepends?.map { RakuUtils.stripAuthVerApi(it) } ?: listOf()
 
     val buildDepends: List<String>
-        get() = meta?.simplifiedBuildDepends ?: listOf()
+        get() = meta?.simplifiedBuildDepends?.map { RakuUtils.stripAuthVerApi(it) } ?: listOf()
 
     val providedMap: Map<String, String>
         get() = meta?.provides ?: mapOf()

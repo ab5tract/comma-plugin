@@ -34,6 +34,11 @@ object CommaProjectUtil {
         return if (projectHasMetaFile(project)) metaFile(project).depends.map { RakuUtils.stripAuthVerApi(it) } else listOf()
     }
 
+    @JvmStatic
+    fun projectProvides(project: Project): Set<String> {
+        return if (projectHasMetaFile(project)) metaFile(project).provides.keys.map { RakuUtils.stripAuthVerApi(it) }.toSet() else setOf()
+    }
+
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
