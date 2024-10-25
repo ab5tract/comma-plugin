@@ -26,6 +26,7 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
     // This should *only* be called by the RakuDependencyService.doInitialize()
     fun dependenciesToRakuFiles(state: ModuleDetailsState): Deferred<ModuleDetailsState> {
         if (project.service<RakuProjectSdkService>().zef == null) return CompletableDeferred(state)
+
         return runScope.async {
             fillProvidesToRakuFiles(state)
         }
@@ -111,6 +112,16 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
                 // TODO: Do something with the notInstalled details
                 val result = Json.decodeFromString<PathLookupResult>(output)
                 provideMap.putAll(result.pathLookup)
+
+                val coreLocateScript = RakuUtils.getResourceAsFile("scripts/find-core-provided-libraries.raku")
+                    ?: throw ExecutionException("Resource bundle is corrupted: locate script is missing")
+                val corePathCollectorScript = RakuCommandLine(sdkHome)
+                corePathCollectorScript.addParameter(coreLocateScript.absolutePath)
+                output = corePathCollectorScript.executeAndRead(null).joinToString("\n")
+                // TODO: Do something with the notInstalled details
+                val coreResult = Json.decodeFromString<PathLookupResult>(output)
+                provideMap.putAll(coreResult.pathLookup)
+
                 return@future provideMap
             } catch (e: Exception) {
                 RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK ${e.message!!}")

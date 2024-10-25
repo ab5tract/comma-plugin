@@ -23,7 +23,9 @@ public class RakuServiceConstants {
         "NativeCall::Types",
         "NativeCall::Compiler::GNU",
         "NativeCall::Compiler::MSVC",
-        "Test", "Pod::To::Text", "Telemetry"
+        "Test",
+        "Pod::To::Text",
+        "Telemetry"
     );
 
     public static final List<String> PRAGMAS = List.of(

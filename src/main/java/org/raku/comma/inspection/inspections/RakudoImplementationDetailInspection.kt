@@ -28,7 +28,7 @@ class RakudoImplementationDetailInspection : RakuInspection() {
                 val resolution = reference.resolve()
                 if (excludeCall(element.callName, resolution)) {
                     holder.registerProblem(element,
-                                           DESCRIPTION_FORMAT_METHOD.format(element.callName),
+                                           DESCRIPTION_FORMAT_METHOD.format(element.callName, "method"),
                                            ProblemHighlightType.INFORMATION)
                 }
             }

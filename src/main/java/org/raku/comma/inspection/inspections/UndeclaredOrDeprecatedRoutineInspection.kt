@@ -18,13 +18,13 @@ class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
 
         // Only do the analysis if the core setting symbols are available.
         // TODO!!! Get the CoreSettings stuff extracted working again.
-        val setting = element.getProject().service<RakuProjectSdkService>().symbolCache?.getCoreSettingFile()
+        val setting = element.getProject().service<RakuProjectSdkService>().symbolCache.getCoreSettingFile()
                             ?: return
         if (setting.virtualFile.name == "DUMMY") return
 
         // Resolve the reference.
         val subName = element.callName
-        if (subName == "::") return
+        if (subName.startsWith("::")) return
         val reference = element.reference as PsiReferenceBase.Poly<*> ?: return
         val results = reference.multiResolve(true)
 
@@ -52,7 +52,8 @@ class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
 
     private fun RakuSubCallName.isValidNqp(): Boolean {
         if (! this.callName.startsWith("nqp::")) return false
-        return PsiTreeUtil.findChildrenOfType(containingFile, RakuUseStatement::class.java).any { it.moduleName == "nqp" }
+        return PsiTreeUtil.findChildrenOfType(containingFile, RakuUseStatement::class.java)
+                          .any { it.moduleName == "nqp" || it.moduleName == "MONKEY-GUTS" }
                 || this.project.service<RakuProjectDetailsService>().isProjectRakudoCore()
     }
 }
