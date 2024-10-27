@@ -32,6 +32,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.raku.comma.RakuIcons
 import org.raku.comma.metadata.data.MetaFile
+import org.raku.comma.utils.CommaProjectUtil
 import org.raku.comma.utils.RakuUtils
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -84,7 +85,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
 
                 // If everything fails, notify about META absence
                 // and suggest stubbing it
-                if (metaFile == null) {
+                if (metaFile == null && !CommaProjectUtil.scriptOnlyProject(project)) {
                     notifyMissingMETA()
                 }
             }
@@ -445,8 +446,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
         val notification: Notification = Notification(
             "raku.meta.errors", "Raku meta file is missing",
             String.format(
-                "'%s' nor '%s' files seem to be present in this module.",
-                META_OBSOLETE_NAME,
+                "No '%s' file seem to be present in this module.",
                 META6_JSON_NAME
             ),
             NotificationType.WARNING
@@ -457,7 +457,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
                 try {
                     notification.expire()
                     if (module == null || module?.isDisposed == true || project.isDisposed) return
-                    createStubMetaFile(module!!.getName(), null, true)
+                    createStubMetaFile(module!!.name, null, true)
                 } catch (e1: IOException) {
                     val notification1: Notification = Notification(
                         "raku.meta.errors", String.format("%s error", META6_JSON_NAME),

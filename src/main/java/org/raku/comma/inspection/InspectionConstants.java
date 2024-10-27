@@ -172,8 +172,9 @@ public class InspectionConstants {
     }
 
     public static class UsedModuleInspection {
-        public static final String DESCRIPTION_META6_FORMAT = "Cannot find %s based on dependencies from META6.json";
+        public static final String DESCRIPTION_META6_FORMAT = "Cannot find %s which is specified as a dependency in META6.json";
         public static final String DESCRIPTION_IN_META6_BUT_MISSING_FORMAT = "Module %s is in META6.json dependencies but is not installed";
+        public static final String DESCRIPTION_MODULE_NOT_INSTALLED = "Module %s is is not installed for current Raku";
         public static final String DESCRIPTION_ECO_FORMAT = "Cannot find %s in the ecosystem";
     }
 

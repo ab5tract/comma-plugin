@@ -1,8 +1,6 @@
 package org.raku.comma.utils
 
-import com.intellij.execution.ExecutionException
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportProgress
@@ -10,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.raku.comma.metadata.data.ExternalMetaFile
-import org.raku.comma.sdk.RakuSdkUtil
 import org.raku.comma.services.application.RakuEcosystem
 import org.raku.comma.services.project.*
 import java.io.File
@@ -24,7 +21,22 @@ object CommaProjectUtil {
 
     @JvmStatic
     fun isRakudoCoreProject(project: Project): Boolean {
-        return project.service<RakuProjectDetailsService>().isProjectRakudoCore()
+        return project.service<RakuProjectDetailsService>().isProjectRakudoCore
+    }
+
+    @JvmStatic
+    fun projectContainRakuCode(project: Project): Boolean {
+        return project.service<RakuProjectDetailsService>().doesProjectContainRakuCode
+    }
+
+    @JvmStatic
+    fun projectContainsNoRakuCode(project: Project): Boolean {
+        return !project.service<RakuProjectDetailsService>().doesProjectContainRakuCode
+    }
+
+    @JvmStatic
+    fun scriptOnlyProject(project: Project): Boolean {
+        return projectContainRakuCode(project) && !projectHasMetaFile(project)
     }
 
     // Technically this should also be available at the Facet level so that different project-modules can have their
@@ -75,7 +87,6 @@ object CommaProjectUtil {
         val metaLoaded = withContext(Dispatchers.IO) {
             metaService.metaLoaded?.get() == true
         }
-        if (!metaLoaded) return
 
         if (withContext(Dispatchers.IO) { maybeInstallZef.get() } == 0) {
             project.service<RakuProjectDetailsService>().moduleServiceDidStartup = false

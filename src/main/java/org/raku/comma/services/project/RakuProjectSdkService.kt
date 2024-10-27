@@ -63,6 +63,9 @@ class RakuProjectSdkService(
     val rakuPath: String?
         get() = if (sdkPath != null) sdkPath!! + "/raku" else null
 
+    val zefPath: String
+        get() = calculateZefPath(sdkPath!!)
+
     val sdkName: String
         get() = "Raku ${sdkState.projectSdkVersion ?: "<UNKNOWN>"}"
 

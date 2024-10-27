@@ -62,15 +62,25 @@ class UsedModuleInspection : RakuInspection() {
 
         val holderPackage = moduleDetails.moduleByProvide(moduleName)
         if (holderPackage != null) {
-            if (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName)) {
-                val editor = PsiEditorUtil.findEditor(element) ?: return
-                customHighlight(editor, highlightTextRange(moduleNameNode), RakuHighlighter.ALT_WARNING, HighlighterLayer.ERROR)
-                holder.registerProblem(element,
-                                       DESCRIPTION_IN_META6_BUT_MISSING_FORMAT.format(moduleName),
-                                       ProblemHighlightType.WARNING,
-                                       *arrayOf(InstallMissingDependencyFix(moduleName)))
+            // script-only project, so load installed modules in dependency service
+            if (metadata.noMeta) {
+                    val editor = PsiEditorUtil.findEditor(element) ?: return
+                    customHighlight(editor, highlightTextRange(moduleNameNode), RakuHighlighter.ALT_WARNING, HighlighterLayer.ERROR)
+                    holder.registerProblem(element,
+                                           DESCRIPTION_MODULE_NOT_INSTALLED.format(moduleName),
+                                           ProblemHighlightType.WARNING,
+                                           *arrayOf(InstallMissingDependencyFix(moduleName)))
             } else {
-                holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), MissingModuleFix(moduleName))
+                if (moduleDetails.dependencyInMeta(moduleName)) {
+                    val editor = PsiEditorUtil.findEditor(element) ?: return
+                    customHighlight(editor, highlightTextRange(moduleNameNode), RakuHighlighter.ALT_WARNING, HighlighterLayer.ERROR)
+                    holder.registerProblem(element,
+                                           DESCRIPTION_IN_META6_BUT_MISSING_FORMAT.format(moduleName),
+                                           ProblemHighlightType.WARNING,
+                                           *arrayOf(InstallMissingDependencyFix(moduleName)))
+                } else {
+                    holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), MissingModuleFix(moduleName))
+                }
             }
         } else {
             holder.registerProblem(element, DESCRIPTION_ECO_FORMAT.format(moduleName), CreateLocalModuleFix(moduleName))
@@ -85,8 +95,8 @@ class UsedModuleInspection : RakuInspection() {
         file: VirtualFile
     ): Boolean {
         return  metadata.providedNames.contains(moduleName)
-                || (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName)
-                    && moduleDetails.moduleDetails.provideToRakuFile[moduleName] != null)
+                || (moduleDetails.moduleDetails.provideToRakuFile[moduleName] != null
+                    && metadata.noMeta || (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName)))
                 || (file.url.startsWith("mock://") && element.reference?.resolve() != null)
     }
 }

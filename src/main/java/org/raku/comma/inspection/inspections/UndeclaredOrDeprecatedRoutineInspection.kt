@@ -53,7 +53,7 @@ class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
     private fun RakuSubCallName.isValidNqp(): Boolean {
         if (! this.callName.startsWith("nqp::")) return false
         return PsiTreeUtil.findChildrenOfType(containingFile, RakuUseStatement::class.java)
-                          .any { it.moduleName == "nqp" || it.moduleName == "MONKEY-GUTS" }
-                || this.project.service<RakuProjectDetailsService>().isProjectRakudoCore()
+                    .any { it.moduleName == "nqp" || it.moduleName == "MONKEY-GUTS" || it.moduleName == "MONKEY" }
+                || this.project.service<RakuProjectDetailsService>().isProjectRakudoCore
     }
 }

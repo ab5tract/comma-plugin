@@ -35,11 +35,11 @@ class RakuReplConsole(
     val replState: RakuReplState = RakuReplState(this)
     private var myReplBackendFile: File? = null
 
+    @Suppress("UnstableApiUsage")
     override fun createConsoleView(): LanguageConsoleView {
         val builder = LanguageConsoleBuilder()
         builder.oneLineInput(false)
-        val consoleView = builder
-            .build(project, RakuLanguage.INSTANCE)
+        val consoleView = builder.build(project, RakuLanguage.INSTANCE)
 
         val consoleEditor = consoleView.consoleEditor
         addHint(consoleEditor)

@@ -60,7 +60,6 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
             newToRakuFileLookup[rakuFile.moduleName] = rakuFile
         }
 
-        // TODO: Prompt to install missing dependencies
         return state.copy(
             dependencyToPath = finalToPath,
             provideToRakuFile = newToRakuFileLookup
@@ -69,8 +68,10 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
 
     @Synchronized
     fun fillState(state: ModuleDetailsState): ModuleDetailsState {
-        // TODO: Address potential duplicates in the dependency list and multiple paths in the provides output
-        val direct = CommaProjectUtil.projectDependencies(project).toSet()
+        val scriptOnlyProject = CommaProjectUtil.scriptOnlyProject(project)
+        val direct = if (scriptOnlyProject)
+                        RakuUtils.installedModules(project)
+                     else CommaProjectUtil.projectDependencies(project).toSet()
         val deep = dependenciesDeep(state, direct)
 
         return state.copy(currentDependenciesDeep = deep,

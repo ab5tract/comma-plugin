@@ -1,18 +1,20 @@
 package org.raku.comma.utils;
 
+import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.pm.RakuDependencySpec;
+import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -126,5 +128,20 @@ public class RakuUtils {
         if (c == 60) return "lt";
         if (c == 38) return "amp";
         return String.valueOf(c);
+    }
+
+    @NotNull
+    public static Set<String> installedModules(@NotNull Project project) throws ExecutionException {
+        var findAllInstalledModules = new RakuCommandLine(project);
+        findAllInstalledModules.addParameters("-MZef::CLI", "-e''", "list", "--installed");
+
+        var output = findAllInstalledModules.executeAndRead(null);
+        if (output.size() >= 3) {
+            output.removeFirst();
+            output.removeLast();
+            output.removeLast();
+        }
+
+        return output.stream().map(module -> new RakuDependencySpec(module).getName()).collect(Collectors.toSet());
     }
 }
