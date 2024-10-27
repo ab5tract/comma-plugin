@@ -11,7 +11,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.raku.comma.RakuIcons;
-//import org.raku.comma.actions.ShowRakuProjectStructureAction;
 import org.raku.comma.services.project.RakuProjectSdkService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +25,8 @@ public class RakuLaunchReplAction extends AnAction {
         if (getSdkHome(e) == null || e.getProject() == null)
             return;
         Project project = e.getProject();
-        RakuReplConsole console = new RakuReplConsole(project, "Raku REPL", project.getBasePath());
+        String title = useModule != null ? "Raku REPL (use %s)".formatted(useModule) : "Raku REPL";
+        RakuReplConsole console = new RakuReplConsole(project, title);
         try {
             console.initAndRun();
             if (useModule != null)
@@ -36,12 +36,6 @@ public class RakuLaunchReplAction extends AnAction {
             Notification notification = new Notification("raku.repl.errors", "Cannot run REPL",
                                                          "Could not start Raku REPL", NotificationType.ERROR);
             notification.setIcon(RakuIcons.CAMELIA);
-//            notification = notification.addAction(new AnAction("Check SDK") {
-//                @Override
-//                public void actionPerformed(@NotNull AnActionEvent e) {
-//                    new ShowRakuProjectStructureAction().actionPerformed(e);
-//                }
-//            });
             notification = notification.addAction(new AnAction("Show Exception Details to Report") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {

@@ -96,7 +96,7 @@ public class RakuReplOutputHandler extends OSProcessHandler {
                 specialOutputKind = SpecialOutputKind.None;
             }
             else if (line.equals("\u0001 COMPILED-OK")) {
-                repl.getReplState().markLatestCompiledOk();
+                repl.replState.markLatestCompiledOk();
             }
             else if (specialOutputKind == SpecialOutputKind.None) {
                 // It's just normal stderr output; pass it on for default

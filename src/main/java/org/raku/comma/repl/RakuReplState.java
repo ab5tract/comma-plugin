@@ -40,7 +40,7 @@ public class RakuReplState {
 
     private final RakuReplConsole console;
     private final List<HistoryEntry> executionHistory = new ArrayList<>();
-    public static final Key<RakuReplState> RAKU_REPL_STATE = Key.create("PERL6_REPL_STATE");
+    public static final Key<RakuReplState> RAKU_REPL_STATE = Key.create("RAKU_REPL_STATE");
     private final List<Runnable> newHistoryListeners = new ArrayList<>();
     private Collection<PsiNamedElement> lastRegexVars = null;
 

@@ -18,8 +18,8 @@ public class RakuReplHistoryKeyListener extends KeyAdapter {
 
     public RakuReplHistoryKeyListener(RakuReplConsole repl) {
         this.repl = repl;
-        repl.getReplState().addNewHistoryListener(() -> {
-            historyPos = repl.getReplState().getHistorySize();
+        repl.replState.addNewHistoryListener(() -> {
+            historyPos = repl.replState.getHistorySize();
             prevCaretOffset = -1;
             unfinishedCommand = "";
         });
@@ -48,7 +48,7 @@ public class RakuReplHistoryKeyListener extends KeyAdapter {
 
     private void moveHistoryCursor(HistoryMove move) {
         // Approach taken here is thanks to the Kotlin REPL.
-        RakuReplState state = repl.getReplState();
+        RakuReplState state = repl.replState;
 
         // If there's no history or if auto-complete window is open, don't do
         // anything.
