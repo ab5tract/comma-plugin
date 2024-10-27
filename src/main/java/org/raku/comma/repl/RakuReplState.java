@@ -68,24 +68,27 @@ public class RakuReplState {
             LightVirtualFile file = new LightVirtualFile(historyEntryFilename, RakuLanguage.INSTANCE, code);
             file.setCharset(StandardCharsets.UTF_8);
             file.setWritable(false);
-            PsiFile psiFile = ((PsiFileFactoryImpl)PsiFileFactory.getInstance(project)).trySetupPsiForFile(
-              file, RakuLanguage.INSTANCE, true, false);
-            if (psiFile instanceof RakuFile)
-                executionHistory.add(new HistoryEntry((RakuFile)psiFile));
+            PsiFile psiFile = ((PsiFileFactoryImpl) PsiFileFactory.getInstance(project))
+                    .trySetupPsiForFile(file, RakuLanguage.INSTANCE, true, false);
+            if (psiFile instanceof RakuFile) {
+                executionHistory.add(new HistoryEntry((RakuFile) psiFile));
+            }
             RakuFile regexFile = RakuElementFactory.createFileFromText(project, code + "; $0;");
             RakuVariable markerVariable = PsiTreeUtil.findElementOfClassAtOffset(regexFile, code.length() + 2, RakuVariable.class, false);
             if (markerVariable != null) {
                 Collection<PsiNamedElement> regexDrivenVars = RakuVariableReference.obtainRegexDrivenVars(markerVariable);
-                if (regexDrivenVars != null)
+                if (regexDrivenVars != null) {
                     lastRegexVars = regexDrivenVars;
+                }
             }
 
             // Make sure the REPL state is attached to the console virtual file.
             consoleFile.putUserDataIfAbsent(RAKU_REPL_STATE, this);
 
             // Fire any new history listeners.
-            for (Runnable listener : newHistoryListeners)
+            for (Runnable listener : newHistoryListeners) {
                 listener.run();
+            }
         });
     }
 
