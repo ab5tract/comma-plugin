@@ -89,7 +89,6 @@ class RakuReplConsole(
                     """
                         EVAL ${lines.size}
                         ${java.lang.String.join("\n", *lines)}
-
                     """.trimIndent()
                 )
 
