@@ -2,8 +2,10 @@ package org.raku.comma.project
 
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtilCore
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.projectImport.ProjectOpenProcessor
@@ -28,6 +30,9 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
             if (file.toNioPath().resolve("META.info").toFile().exists()) {
                 return true
             }
+            if (file.path.endsWith("rakudo") && file.toNioPath().resolve("Configure.pl").toFile().exists()) {
+                return true
+            }
         }
         val fileName = file.name
         return fileName == "META6.json" || fileName == "META.info"
@@ -44,8 +49,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         removeOldCommaProjectFiles(nioPath)
 
         val isValidIdeaProject = ProjectUtilCore.isValidProjectPath(nioPath)
-        val options = OpenProjectTask(true, projectToClose, !isValidIdeaProject, isValidIdeaProject
-        )
+        val options = OpenProjectTask(true, projectToClose, !isValidIdeaProject, isValidIdeaProject)
         val project = ProjectManagerEx.getInstanceEx().openProject(nioPath, options)
         if (project != null) {
             runBlocking {
@@ -58,7 +62,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     override suspend fun importProjectAfterwardsAsync(project: Project, file: VirtualFile) {
         val projectBuilder = RakuProjectBuilder()
         projectBuilder.fileToImport = file.toString()
-        projectBuilder.commit(project, null)
+        projectBuilder.commit(project)
     }
 
     override fun canImportProjectAfterwards(): Boolean {

@@ -12,6 +12,7 @@ import com.intellij.ui.components.JBComboBoxLabel
 import com.intellij.ui.dsl.builder.*
 import org.raku.comma.services.application.RakuSdkStore
 import org.raku.comma.services.application.RakuSdkStoreEntry
+import org.raku.comma.services.project.RakuProjectDetailsService
 import org.raku.comma.services.project.RakuProjectSdkService
 import java.awt.event.ActionEvent
 import javax.swing.JComponent
@@ -90,5 +91,10 @@ class RakuSdkChooserUI(
         if (RakuSdkUtil.isValidRakuSdkHome(sdkHome)) sdkService.setProjectSdkPath(sdkHome)
 
         super.doOKAction()
+    }
+
+    override fun doCancelAction() {
+        project.service<RakuProjectDetailsService>().hasProjectSdkPrompted = true
+        super.doCancelAction()
     }
 }

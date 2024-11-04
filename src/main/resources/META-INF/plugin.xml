@@ -317,7 +317,7 @@
                 factoryClass="org.raku.comma.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.project.activity.RakuServiceStarter"
-                                   order="first"/>
+                                   order="last"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.utils.RakuLegacyExtensionsDetector"/>
 <!--    <backgroundPostStartupActivity implementation="org.raku.comma.services.project.RakuModuleInstallPromptStarter"-->
 <!--                                   order="last" />-->
@@ -380,7 +380,7 @@
     <navbar implementation="org.raku.comma.structureView.RakuStructureAwareNavbar"/>
     <backgroundPostStartupActivity id="ProjectIsRakudoCoreAnnouncer"
                                    implementation="org.raku.comma.project.activity.ProjectIsRakudoCoreDetector"
-                                   order="last"/>
+                                   order="first"/>
   </extensions>
 
   <!--  <applicationListeners>-->

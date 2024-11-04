@@ -98,12 +98,14 @@ class RakuProjectSdkService(
     }
 
     private suspend fun promptForSdkPath() {
-        runScope.async {
-            withContext(Dispatchers.EDT) {
-                val chooser = RakuSdkChooserUI(project, null)
-                chooser.show()
-            }
-        }.await()
+        if (! project.service<RakuProjectDetailsService>().hasProjectSdkPrompted) {
+            runScope.async {
+                withContext(Dispatchers.EDT) {
+                    val chooser = RakuSdkChooserUI(project, null)
+                    chooser.show()
+                }
+            }.await()
+        }
     }
 
     fun calculateZefPath(sdkPath: String): String {
@@ -146,7 +148,7 @@ class RakuProjectSdkService(
             val cmd = RakuCommandLine(project)
             cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"))
             cmd.addParameter("--show-config")
-            subs = cmd.executeAndRead(null)
+            subs = cmd.executeAndRead()
             val buildConfig: MutableMap<String, String> = TreeMap()
 
             for (line in subs) {

@@ -32,6 +32,8 @@ class RakuProjectDetailsService(
         this.projectState = refreshState(state)
     }
 
+    // moduleServiceStatus
+    // Tracks whether the module details and dependencies have been loaded. Reset prior to refreshing these services.
     private val moduleServiceStatus = AtomicBoolean(false)
     var moduleServiceDidStartup: Boolean
         get() = moduleServiceStatus.get()
@@ -39,17 +41,27 @@ class RakuProjectDetailsService(
     val noModuleServiceDidNotStartup: Boolean
         get() = !moduleServiceDidStartup
 
+    // missingDependenciesNotificationStatus
+    // Tracks whether we have already prompted about missing dependencies. This avoids a pile-up of notification prompts.
     private val missingDependencyNotificationStatus = AtomicBoolean(false)
     var hasNotifiedMissingDependencies: Boolean
         get() = missingDependencyNotificationStatus.get()
-        set(value) {
-            missingDependencyNotificationStatus.set(value)
-        }
+        set(value) = missingDependencyNotificationStatus.set(value)
 
+    // projectFilesScannedStatus
+    // Tracks whether the project files have been scanned for Raku files and Rakudo core status.
     private val projectFilesScannedStatus = AtomicBoolean(false)
     var hasScannedForRakuFiles: Boolean
         get() = projectFilesScannedStatus.get()
         set(value) = projectFilesScannedStatus.set(value)
+
+    // projectSdkPromptedStatus
+    // Tracks whether the SDK prompt has already been shown to the user. This allows 'Cancel' to be
+    // meaningfully selected without resulting in the popup repeatedly appearing as a result.
+    private val projectSdkPromptedStatus = AtomicBoolean(false)
+    var hasProjectSdkPrompted: Boolean
+        get() = projectSdkPromptedStatus.get()
+        set(value) = projectSdkPromptedStatus.set(value)
 
     // Detail:  isProjectProjectRakudoCore
     // Purpose: To allow toggling certain annotations and other features that make sense in regular

@@ -20,7 +20,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.raku.comma.RakuIcons
 import org.raku.comma.module.RakuModuleType
 import org.raku.comma.services.project.RakuMetaDataComponent
+import org.raku.comma.utils.CommaProjectUtil
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.Icon
 
@@ -53,10 +55,6 @@ class RakuProjectBuilder : ProjectBuilder() {
         model: ModifiableModuleModel?,
         modulesProvider: ModulesProvider
     ): List<Module> {
-        // XXX This builder could be used when importing project from Project Structure,
-        // in this case `model` parameter is not null
-        val result: MutableList<Module> = ArrayList()
-
         try {
             WriteAction.runAndWait<RuntimeException> {
                 val lfs = LocalFileSystem.getInstance()
@@ -68,13 +66,28 @@ class RakuProjectBuilder : ProjectBuilder() {
 
                 val modelToPatch = model ?: ModuleManager.getInstance(project).getModifiableModel()
                 val module = modelToPatch.newModule(getModuleFilePath(project), RakuModuleType.getInstance().id)
-                result.add(module)
 
                 val rootModel = ModuleRootManager.getInstance(module).modifiableModel
                 val entry = rootModel.addContentEntry(contentRoot)
-                addSourceDirectory("lib", contentRoot, entry, false)
-                addSourceDirectory("bin", contentRoot, entry, false)
-                addSourceDirectory("t", contentRoot, entry, true)
+                if (CommaProjectUtil.isRakudoCoreProject(project)) {
+                    addSourceDirectory("src", contentRoot, entry, false)
+
+                    addSourceDirectory("t", contentRoot, entry, true)
+                    addExcludeDirectory("t/spec", contentRoot, entry)
+                    addExcludeDirectory("install", contentRoot, entry)
+                    addExcludeDirectory("gen", contentRoot, entry)
+                    addExcludeDirectory("blib", contentRoot, entry)
+
+                    // TODO: Create a Java module to add JVM sources? and NQP?
+//                    addSourceDirectory("nqp/src", contentRoot, entry, false)
+//                    addSourceDirectory("nqp/src/vm/jvm", contentRoot, entry, false)
+//                    addSourceDirectory("nqp/MoarVM/src", contentRoot, entry, false)
+//                    addSourceDirectory("nqp/t", contentRoot, entry, true)
+                } else {
+                    addSourceDirectory("lib", contentRoot, entry, false)
+                    addSourceDirectory("bin", contentRoot, entry, false)
+                    addSourceDirectory("t", contentRoot, entry, true)
+                }
                 modelToPatch.commit()
                 rootModel.commit()
 
@@ -101,7 +114,8 @@ class RakuProjectBuilder : ProjectBuilder() {
         } catch (e: Exception) {
             LOG.info(e)
         }
-        return result
+
+        return emptyList()
     }
 
     override fun isUpdate(): Boolean {
@@ -117,5 +131,11 @@ class RakuProjectBuilder : ProjectBuilder() {
         if (child != null && VfsUtilCore.isEqualOrAncestor(entry.url, child.url)) {
             entry.addSourceFolder(child, isTest)
         }
+    }
+
+    private fun addExcludeDirectory(name: String, contentRoot: VirtualFile, entry: ContentEntry) {
+        // We do not care if you exist, we will exclude you regardless!
+        val resolved = contentRoot.toNioPath().resolve(name).toUri().toString()
+        entry.addExcludeFolder(resolved)
     }
 }

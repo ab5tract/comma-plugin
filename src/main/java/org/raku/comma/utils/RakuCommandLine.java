@@ -60,6 +60,11 @@ public class RakuCommandLine extends GeneralCommandLine {
     }
 
     @NotNull
+    public List<String> executeAndRead() {
+        return executeAndRead(null);
+    }
+
+    @NotNull
     public List<String> executeAndRead(@Nullable File scriptFile) {
         List<String> results = new LinkedList<>();
         try {
