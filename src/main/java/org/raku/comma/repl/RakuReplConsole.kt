@@ -83,13 +83,11 @@ class RakuReplConsole(
             }
 
             override fun processLine(line: String) {
-                // Wrap in envelope for REPL backend.
-                val lines = line.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 sendText(
                     """
-                        EVAL ${lines.size}
-                        ${java.lang.String.join("\n", *lines)}
-                    """.trimIndent()
+                        EVAL ${line.lines().size}
+                        $line
+                    """.trim() + "\n"
                 )
 
                 // Add this line to the history, (used for history and auto-complete).
