@@ -17,20 +17,23 @@ import org.jetbrains.annotations.Nullable;
 
 public class RakuLaunchReplAction extends AnAction {
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        startRepl(e, null);
+    public void actionPerformed(@NotNull AnActionEvent event) {
+        startRepl(event, null);
     }
 
-    protected void startRepl(@NotNull AnActionEvent e, @Nullable String useModule) {
-        if (getSdkHome(e) == null || e.getProject() == null)
+    protected void startRepl(@NotNull AnActionEvent event, @Nullable String useModule) {
+        if (getSdkHome(event) == null || event.getProject() == null) {
             return;
-        Project project = e.getProject();
+        }
+        Project project = event.getProject();
         String title = useModule != null ? "Raku REPL (use %s)".formatted(useModule) : "Raku REPL";
         RakuReplConsole console = new RakuReplConsole(project, title);
         try {
             console.initAndRun();
-            if (useModule != null)
-                ApplicationManager.getApplication().invokeAndWait(() -> console.executeStatement("use " + useModule + ";"));
+            if (useModule != null) {
+                ApplicationManager.getApplication()
+                                  .invokeAndWait(() -> console.executeStatement("use " + useModule + ";"));
+            }
         }
         catch (ExecutionException ex) {
             Notification notification = new Notification("raku.repl.errors", "Cannot run REPL",
@@ -47,9 +50,9 @@ public class RakuLaunchReplAction extends AnAction {
     }
 
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        boolean available = getSdkHome(e) != null;
-        e.getPresentation().setEnabled(available);
+    public void update(@NotNull AnActionEvent event) {
+        boolean available = getSdkHome(event) != null;
+        event.getPresentation().setEnabled(available);
     }
 
     @Override
@@ -57,8 +60,8 @@ public class RakuLaunchReplAction extends AnAction {
         return ActionUpdateThread.BGT;
     }
 
-    protected static String getSdkHome(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
+    protected static String getSdkHome(@NotNull AnActionEvent event) {
+        Project project = event.getProject();
         if (project == null) return null;
         return project.getService(RakuProjectSdkService.class).getSdkPath();
     }

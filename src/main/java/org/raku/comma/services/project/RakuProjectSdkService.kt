@@ -57,7 +57,7 @@ class RakuProjectSdkService(
         get() = provideSymbolCache()
 
     var sdkPath: String?
-        get() = getState().projectSdkPath
+        get() = state.projectSdkPath
         set(newPath) = setProjectSdkPath(newPath!!)
 
     val rakuPath: String?
@@ -161,7 +161,7 @@ class RakuProjectSdkService(
             }
             return buildConfig
         } catch (e: ExecutionException) {
-            RakuSdkUtil.reactToSdkIssue(project, "Unable to generate moar build config (%s)".format(e.message))
+            RakuSdkUtil.reactToSdkIssue(project, "Unable to generate moar build config", ex = e)
             return mapOf()
         }
     }
@@ -221,7 +221,7 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String?, 
                     "getCoreSettingFile is called with corrupted resources bundle, using fallback"
                 else
                     "getCoreSettingFile is called with corrupted resources bundle"
-            RakuSdkUtil.reactToSdkIssue(project, errorMessage)
+            RakuSdkUtil.reactToSdkIssue(project, "Issue Gathering Core Symbols", message = errorMessage)
             return getFallback()
         }
 
@@ -242,7 +242,9 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String?, 
                         } catch (ignored: Exception) {}
 
                         if (settingLines.isEmpty()) {
-                            RakuSdkUtil.reactToSdkIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback")
+                            RakuSdkUtil.reactToSdkIssue(project,
+                                                        "Issue Gathering Core Symbols",
+                                                        "getCoreSettingFile got no symbols from Raku, using fallback")
                             getFallback()
                         } else {
                             projectSymbolCache.setting = makeSettingSymbols(settingLines)
@@ -260,7 +262,7 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String?, 
             }
             return ExternalRakuFile(project, LightVirtualFile("DUMMY"))
         } catch (e: ExecutionException) {
-            RakuSdkUtil.reactToSdkIssue(project, "Problem encountered while digesting CORE.setting symbols (%s)".format(e.message))
+            RakuSdkUtil.reactToSdkIssue(project, "Problem encountered while digesting CORE.setting symbols", ex = e)
             return getFallback()
         }
     }
@@ -301,6 +303,7 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String?, 
         if (fallback == null) {
             RakuSdkUtil.reactToSdkIssue(
                 project,
+                "Issue Gathering Core Symbols",
             """
                     Could not get CORE.setting symbols, perhaps due to a corrupted resources bundle.
                     Try to set a proper SDK for this project.
@@ -312,7 +315,7 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String?, 
         try {
             return makeSettingSymbols(Files.readString(fallback.toPath()))?.also { projectSymbolCache.setting = it }
         } catch (e: IOException) {
-            RakuSdkUtil.reactToSdkIssue(project, "Could not provide CORE.setting fallback (%s)".format(e.message))
+            RakuSdkUtil.reactToSdkIssue(project, "Could not provide CORE.setting fallback", ex = e)
             return ExternalRakuFile(project, LightVirtualFile(SETTING_FILE_NAME))
         }
     }

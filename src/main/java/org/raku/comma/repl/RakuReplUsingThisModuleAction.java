@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class RakuReplUsingThisModuleAction extends RakuLaunchReplAction {
     @Override
-    public void update(@NotNull AnActionEvent e) {
+    public void update(@NotNull AnActionEvent event) {
         boolean available = false;
-        if (getSdkHome(e) != null) {
-            PsiFile currentFile = e.getData(CommonDataKeys.PSI_FILE);
+        if (getSdkHome(event) != null) {
+            PsiFile currentFile = event.getData(CommonDataKeys.PSI_FILE);
             available = currentFile instanceof RakuFile &&
                         ((RakuFile)currentFile).getEnclosingRakuModuleName() != null;
         }
-        e.getPresentation().setEnabledAndVisible(available);
+        event.getPresentation().setEnabledAndVisible(available);
     }
 
     @Override

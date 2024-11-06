@@ -1,4 +1,4 @@
-package org.raku.comma.dialogs
+package org.raku.comma.ui.dialogs
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

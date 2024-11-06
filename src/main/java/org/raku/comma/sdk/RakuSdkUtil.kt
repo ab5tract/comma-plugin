@@ -5,6 +5,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
@@ -17,6 +18,7 @@ import org.raku.comma.psi.symbols.MOPSymbolsAllowed
 import org.raku.comma.psi.symbols.RakuSingleResolutionSymbolCollector
 import org.raku.comma.psi.symbols.RakuSymbolCollector
 import org.raku.comma.psi.symbols.RakuSymbolKind
+import org.raku.comma.services.project.RakuModuleInstallPrompt
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -28,6 +30,8 @@ import javax.swing.Icon
 class RakuSdkUtil {
 
     companion object {
+        val LOG = Logger.getInstance(RakuSdkUtil::class.java)
+
         @JvmStatic
         val ICON: Icon = RakuIcons.CAMELIA
 
@@ -87,12 +91,18 @@ class RakuSdkUtil {
 
         @JvmStatic
         @Synchronized
-        fun reactToSdkIssue(project: Project?, message: String) {
+        fun reactToSdkIssue(project: Project?, title: String, message: String? = null, ex: Exception? = null) {
+            val finalMessage = message ?: if (ex != null) ex.message!! else ""
+
+            if (ex != null) {
+                LOG.error(ex)
+            }
+
             if (! alreadyPrompted.get()) {
                 alreadyPrompted.set(true)
                 val notification = NotificationGroupManager.getInstance()
                     .getNotificationGroup("raku.sdk.errors.group")
-                    .createNotification(message, NotificationType.WARNING)
+                    .createNotification(title, finalMessage, NotificationType.WARNING)
 
                 Notifications.Bus.notify(notification, project)
             }

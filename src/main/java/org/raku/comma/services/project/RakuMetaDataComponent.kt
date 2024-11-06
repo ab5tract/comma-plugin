@@ -26,6 +26,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.vfs.readText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -206,7 +207,9 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
         val projectService = project.service<RakuProjectDetailsService>()
         if (projectService.moduleServiceDidStartup) {
             projectService.moduleServiceDidStartup = false
-            project.service<RakuDependencyService>().initialize()
+            runScope.launch {
+                CommaProjectUtil.refreshProjectState(project)
+            }
         }
     }
 

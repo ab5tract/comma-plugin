@@ -78,7 +78,7 @@ public class RakuFileHandler extends ArchiveHandler {
         try {
             cmd = new RakuCommandLine(sdkHome);
         } catch (ExecutionException e) {
-            RakuSdkUtil.reactToSdkIssue(null, "Cannot use current Raku SDK");
+            RakuSdkUtil.reactToSdkIssue(null, "Cannot use current Raku SDK", e.getMessage(), e);
             throw e;
         }
         cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
