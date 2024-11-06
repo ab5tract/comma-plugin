@@ -195,8 +195,9 @@ public class RakuParameterImpl extends RakuASTWrapperPsiElement implements RakuP
     @Override
     public boolean isRW() {
         // Trivially RW if we have the trait.
-        if (hasTrait("rw"))
+        if (hasTrait("rw")) {
             return true;
+        }
 
         // However, we can also be in a <-> pointy block.
         RakuSignature signature = PsiTreeUtil.getParentOfType(this, RakuSignature.class);
@@ -206,6 +207,11 @@ public class RakuParameterImpl extends RakuASTWrapperPsiElement implements RakuP
                    ((RakuPointyBlock)signatured).getLambda().equals("<->");
         }
         return false;
+    }
+
+    @Override
+    public boolean isRaw() {
+        return hasTrait("raw");
     }
 
     private boolean hasTrait(String traitName) {

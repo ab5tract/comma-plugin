@@ -130,6 +130,11 @@ public class ExternalRakuParameter extends RakuExternalPsiElement implements Rak
     }
 
     @Override
+    public boolean isRaw() {
+        return false;
+    }
+
+    @Override
     public @NotNull String getScope() {
         return "my";
     }

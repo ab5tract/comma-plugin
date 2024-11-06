@@ -21,5 +21,8 @@ public interface RakuParameter extends RakuPsiElement, RakuPsiDeclaration, RakuL
     boolean isExplicitlyOptional();
     boolean isCopy();
     boolean isRW();
+
+    boolean isRaw();
+
     boolean equalsParameter(RakuParameter other);
 }

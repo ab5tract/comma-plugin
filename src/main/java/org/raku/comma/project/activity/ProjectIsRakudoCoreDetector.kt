@@ -15,6 +15,10 @@ class ProjectIsRakudoCoreDetector : ProjectActivity {
                                               "RakuBuiltinSubmethod",
                                               "RakuUndeclaredOrDeprecatedRoutine",
                                               "RakuRakudoImplementationDetail",
+                                              "RakuUsedModule",
+                                              "RakuMissingThings",
+                                              "RakuUndeclaredVariable",
+                                              "RakuNamedPairArgument",
                                               "RakuUndeclaredAttribute")
 
     override suspend fun execute(project: Project) {
@@ -62,7 +66,7 @@ class ProjectIsRakudoCoreDetector : ProjectActivity {
     private fun checkForInspections(project: Project) : Boolean {
         val profile = InspectionProfileManager.getInstance(project).currentProfile
         return inspectionsToDisable.stream()
-                                   .allMatch({ inspection -> profile.getToolDefaultState(inspection, project).isEnabled })
+                                   .anyMatch({ inspection -> profile.getToolDefaultState(inspection, project).isEnabled })
     }
 
     private fun disableAnnoyingInspections(project: Project) {

@@ -48,7 +48,7 @@ class AssignmentToImmutableInspection : RakuInspection() {
                             if (signature == null || signature.parent is RakuVariableDecl) return
 
                             // Ensure it's readonly.
-                            if (parameter.isCopy || parameter.isRW) return
+                            if (parameter.isCopy || parameter.isRW || parameter.isRaw) return
                             yieldValue.append("a parameter")
                         }
 
