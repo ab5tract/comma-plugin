@@ -101,7 +101,7 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
         }
         provideMap.keys.forEach { references.remove(it) }
 
-        var output: String = ""
+        var output = ""
         return runScope.future {
             try {
                 val locateScript = RakuUtils.getResourceAsFile("scripts/absolute-path-of-module.raku")
@@ -111,8 +111,10 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
                 references.forEach { reference -> pathCollectorScript.addParameter(reference) }
                 output = pathCollectorScript.executeAndRead(null).joinToString("\n")
                 // TODO: Do something with the notInstalled details
-                val result = Json.decodeFromString<PathLookupResult>(output)
-                provideMap.putAll(result.pathLookup)
+                if (output.isNotEmpty()) {
+                    val result = Json.decodeFromString<PathLookupResult>(output)
+                    provideMap.putAll(result.pathLookup)
+                }
 
                 val coreLocateScript = RakuUtils.getResourceAsFile("scripts/find-core-provided-libraries.raku")
                     ?: throw ExecutionException("Resource bundle is corrupted: locate script is missing")
@@ -120,12 +122,14 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
                 corePathCollectorScript.addParameter(coreLocateScript.absolutePath)
                 output = corePathCollectorScript.executeAndRead(null).joinToString("\n")
                 // TODO: Do something with the notInstalled details
-                val coreResult = Json.decodeFromString<PathLookupResult>(output)
-                provideMap.putAll(coreResult.pathLookup)
+                if (output.isNotEmpty()) {
+                    val coreResult = Json.decodeFromString<PathLookupResult>(output)
+                    provideMap.putAll(coreResult.pathLookup)
+                }
 
                 return@future provideMap
             } catch (e: Exception) {
-                RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK ${e.message!!}")
+                RakuSdkUtil.reactToSdkIssue(project, "Error Gathering Dependency Details", ex = e)
                 return@future mapOf()
             }
         }.join()

@@ -131,6 +131,8 @@
     <errorHandler implementation="org.raku.comma.utils.RakuErrorReportSubmitter"/>
     <statementUpDownMover implementation="org.raku.comma.editor.RakuStatementMover"/>
 
+    <statusBarWidgetFactory id="RakuStatusBarWidgetFactory"
+                            implementation="org.raku.comma.ui.editorMenu.RakuStatusBarWidgetFactory" />
     <treeStructureProvider implementation="org.raku.comma.structureView.RakuProjectStructureProvider"/>
 
 

@@ -4,7 +4,6 @@ use v6.d;
 use nqp;
 use Zef::Client;
 use Zef::Config;
-use JSON::Fast;
 
 my sub parse-value($str-or-kv) {
     do given $str-or-kv {

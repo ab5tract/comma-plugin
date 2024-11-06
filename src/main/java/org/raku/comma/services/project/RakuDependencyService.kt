@@ -36,10 +36,9 @@ class RakuDependencyService(private val project: Project, private val runScope: 
         get() = !isRefreshing
 
     private val dependencyDetails = DependencyDetails(project, runScope)
-    private val moduleListFetcher = ModuleListFetcher(runScope)
     private val modelSync = ProjectModelSync(project, runScope)
 
-    private var moduleDetailsState = ModuleDetailsState()
+    private var moduleDetailsState = ModuleDetailsState(project.service<RakuProjectSdkService>().sdkPath ?: "")
     val moduleDetails: ModuleDetailsState
         get() = moduleDetailsState
 
@@ -47,6 +46,15 @@ class RakuDependencyService(private val project: Project, private val runScope: 
         return runScope.launch {
             if (isNotRefreshing) {
                 var newState = state ?: moduleDetailsState.copy()
+
+                val currentSdk = project.service<RakuProjectSdkService>().sdkPath
+                                    ?: throw RuntimeException("There is no Raku SDK set, so cannot generate dependency details")
+                if (newState.generatedForSdk != currentSdk) {
+                    newState = newState.copy(provideToRakuFile = mutableMapOf(),
+                                             dependencyToPath = mutableMapOf(),
+                                             generatedForSdk = currentSdk)
+                }
+
                 isRefreshing = true
                 runScope.future {
                     newState = dependencyDetails.fillState(newState)
@@ -128,6 +136,8 @@ class RakuDependencyService(private val project: Project, private val runScope: 
 }
 
 data class ModuleDetailsState(
+    val generatedForSdk: String,
+
     val directDependencies: Set<String> = setOf(),
     val secondaryDependencies: Set<String> = setOf(),
     val currentDependenciesDeep: Set<String> = setOf(),

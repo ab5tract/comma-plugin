@@ -33,7 +33,7 @@ class RakuReplConsole(
     private var commandLine: RakuCommandLine? = null
     @JvmField
     val replState: RakuReplState = RakuReplState(this)
-    private var myReplBackendFile: File? = null
+    private var replBackendFile: File? = null
 
     @Suppress("UnstableApiUsage")
     override fun createConsoleView(): LanguageConsoleView {
@@ -51,16 +51,16 @@ class RakuReplConsole(
 
     override fun finishConsole() {
         super.finishConsole()
-        myReplBackendFile!!.delete()
+        replBackendFile!!.delete()
     }
 
     @Throws(ExecutionException::class)
     override fun createProcess(): Process? {
-        myReplBackendFile = RakuUtils.getResourceAsFile("repl/repl-backend.raku")
+        replBackendFile = RakuUtils.getResourceAsFile("repl/repl-backend.raku")
         commandLine = RakuCommandLine(project)
         commandLine!!.setWorkDirectory(project.basePath)
         commandLine!!.addParameter("-I.")
-        commandLine!!.addParameter(myReplBackendFile!!.absolutePath)
+        commandLine!!.addParameter(replBackendFile!!.absolutePath)
         return commandLine!!.createProcess()
     }
 
@@ -83,10 +83,11 @@ class RakuReplConsole(
             }
 
             override fun processLine(line: String) {
+                val trimmed = line.trimEnd()
                 sendText(
                     """
-                        EVAL ${line.lines().size}
-                        $line
+                        EVAL ${trimmed.lines().size}
+                        $trimmed
                     """.trim() + "\n"
                 )
 

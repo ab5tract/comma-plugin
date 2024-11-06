@@ -11,8 +11,8 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
-import org.raku.comma.dialogs.RakuFileCreationDialog
-import org.raku.comma.dialogs.DialogOutput
+import org.raku.comma.ui.dialogs.RakuFileCreationDialog
+import org.raku.comma.ui.dialogs.DialogOutput
 
 class NewRakuFileAction : AnAction(), DumbAware {
     override fun actionPerformed(event: AnActionEvent) {

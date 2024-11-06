@@ -1,6 +1,4 @@
 
-use JSON::Fast;
-
 sub MAIN() {
     my $repo = CompUnit::RepositoryRegistry.repository-for-name("core");
 
