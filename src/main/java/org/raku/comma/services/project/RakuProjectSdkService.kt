@@ -130,7 +130,7 @@ class RakuProjectSdkService(
 //            val component = module.getService(RakuMetaDataComponent::class.java)
 //            component?.triggerMetaBuild()
 //        }
-        project.service<RakuMetaDataComponent>().triggerMetaBuild()
+        project.service<RakuMetaDataComponent>().triggerMetaBuild(refreshDependencies = true)
     }
 
     val zef: RakuPackageManager?

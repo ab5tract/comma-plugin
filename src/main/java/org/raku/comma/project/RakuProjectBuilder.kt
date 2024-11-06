@@ -98,7 +98,7 @@ class RakuProjectBuilder : ProjectBuilder() {
                 val metaFile = lfs.findFileByPath(metaPath.toString())
                 if (metaFile != null) {
                     val component = project.service<RakuMetaDataComponent>()
-                    component.triggerMetaBuild(metaFile)
+                    component.triggerMetaBuild(metaFile, refreshDependencies = true)
                 }
 
                 // Detect and set PM from path

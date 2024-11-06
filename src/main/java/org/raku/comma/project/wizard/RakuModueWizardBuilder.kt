@@ -92,8 +92,8 @@ class RakuModuleWizardBuilder : ModuleBuilder() {
             LOG.warn("Having more than one module is NOT SUPPORTED")
         }
 
-        project.service<RakuMetaDataComponent>().triggerMetaBuild()
         project.service<RakuProjectSdkService>().sdkPath = sdkPath
+        project.service<RakuMetaDataComponent>().triggerMetaBuild(refreshDependencies = true)
 
         return modules
     }

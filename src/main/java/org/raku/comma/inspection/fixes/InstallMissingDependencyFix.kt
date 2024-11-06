@@ -7,9 +7,7 @@ import com.intellij.openapi.project.Project
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.raku.comma.services.project.RakuDependencyService
 import org.raku.comma.services.project.RakuModuleInstallPrompt
-import org.raku.comma.services.project.RakuProjectDetailsService
 import org.raku.comma.utils.CommaProjectUtil
 
 class InstallMissingDependencyFix(private val moduleName: String) : LocalQuickFix {
@@ -24,8 +22,6 @@ class InstallMissingDependencyFix(private val moduleName: String) : LocalQuickFi
             }
         }
     }
-
-
 
     override fun getName(): String { return "Install missing dependency: $moduleName" }
     override fun getFamilyName(): String { return "Install missing dependency" }

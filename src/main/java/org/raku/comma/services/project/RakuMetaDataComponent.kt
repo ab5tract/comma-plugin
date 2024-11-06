@@ -181,21 +181,25 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
         saveFile()
     }
 
-    fun triggerMetaBuild() {
+    fun triggerMetaBuild(refreshDependencies: Boolean = false) {
         val metaParent: VirtualFile = calculateMetaParent() ?: return
         val metaFile: VirtualFile? = metaParent.findChild(META6_JSON_NAME)
         if (metaFile != null) {
-            triggerMetaBuild(metaFile)
+            triggerMetaBuild(metaFile, refreshDependencies)
         }
     }
 
-    fun triggerMetaBuild(metaFile: VirtualFile) {
+    fun triggerMetaBuild(metaFile: VirtualFile, refreshDependencies: Boolean = false) {
         this.metaFile = metaFile
         meta = checkMetaSanity()
-        refreshDependencyState()
+        if (refreshDependencies) {
+            refreshDependencyState()
+        }
     }
 
-    val noMeta: Boolean
+    val hasMeta: Boolean
+        get() = meta != null
+    val hasNoMeta: Boolean
         get() = meta == null
 
     private fun refreshDependencyState() {
@@ -208,7 +212,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
 
     // It did not feel worth DRY-ing these two cases. Three, yes, two, no.
     fun addDepends(name: String) {
-        if (noMeta) return
+        if (hasNoMeta) return
 
         val newDepends = meta!!.depends.toMutableList().apply { add(name) }.toList()
         meta = meta!!.copy(depends = newDepends)
@@ -217,7 +221,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     }
 
     fun addTestDepends(name: String) {
-        if (noMeta) return
+        if (hasNoMeta) return
 
         val newDepends = meta!!.testDepends.toMutableList().apply { add(name) }.toList()
         meta = meta!!.copy(testDepends = newDepends)
@@ -228,7 +232,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     fun addBuildDepends(name: String) {
         // TODO: Wire this up. The structure for build dependencies is stupidly complex.
         // Also, Old Comma didn't support this at all!
-        if (noMeta) return
+        if (hasNoMeta) return
     }
 
     val allDependencies: Set<String>
@@ -320,7 +324,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     }
 
     fun addNamespaceToProvides(name: String, ext: String?) {
-        if (noMeta) return
+        if (hasNoMeta) return
 
         val libBasedModulePath: String = String.format("lib/%s.%s", name.replace("::".toRegex(), "/"), ext)
         val newProvides = meta!!.provides.toMutableMap().apply { put(name, libBasedModulePath) }
@@ -329,7 +333,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     }
 
     fun removeNamespaceFromProvides(name: String?) {
-        if (noMeta || name == null) return
+        if (hasNoMeta || name == null) return
         val newProvides = meta!!.provides.toMutableMap().apply { remove(name) }
         meta = meta!!.copy(provides = newProvides)
         saveFile()
@@ -338,7 +342,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     var name: String?
         get() = meta?.name
         set(name) {
-            if (noMeta) return
+            if (hasNoMeta) return
             meta = meta!!.copy(name = name)
             saveFile()
         }
@@ -346,7 +350,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     var description: String?
         get() = meta?.description
         set(description) {
-            if (noMeta) return
+            if (hasNoMeta) return
             meta = meta!!.copy(description = description)
             saveFile()
         }
@@ -354,7 +358,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     var version: String?
         get() = meta?.version
         set(version) {
-            if (noMeta) return
+            if (hasNoMeta) return
             meta = meta!!.copy(version = version)
             saveFile()
         }
@@ -362,7 +366,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     var auth: String?
         get() = meta?.auth
         set(auth) {
-            if (noMeta) return
+            if (hasNoMeta) return
             meta = meta!!.copy(auth = auth)
             saveFile()
         }
@@ -378,7 +382,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     var sourceUrl: String?
         get() = meta?.sourceUrl
         set(sourceUrl) {
-            if (noMeta) return
+            if (hasNoMeta) return
             meta = meta!!.copy(sourceUrl = sourceUrl)
             saveFile()
         }
@@ -386,7 +390,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
     var authors: List<String>?
         get() = meta?.authors
         set(authors) {
-            if (noMeta || authors == null) return
+            if (hasNoMeta || authors == null) return
             meta = meta!!.copy(authors = authors)
             saveFile()
         }

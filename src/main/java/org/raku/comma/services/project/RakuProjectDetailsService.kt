@@ -3,14 +3,9 @@ package org.raku.comma.services.project
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ContentIterator
-import com.intellij.openapi.vfs.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.guava.future
-import kotlinx.coroutines.withContext
 import org.raku.comma.services.RakuServiceConstants
-import java.nio.file.Path
+import org.raku.comma.utils.CommaProjectUtil
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Service(Service.Level.PROJECT)
@@ -20,9 +15,6 @@ class RakuProjectDetailsService(
     private val runScope: CoroutineScope
 ) : PersistentStateComponent<RakudoProjectState>, DumbAware {
     var projectState: RakudoProjectState = RakudoProjectState()
-
-    // TODO: Place this somewhere accessible from outside?
-    private val rakuExtensions = setOf("pm6", "pl6", "p6", "rakumod", "raku", "rakutest", "rakudoc")
 
     override fun getState(): RakudoProjectState {
         return refreshState(projectState)
@@ -73,30 +65,14 @@ class RakuProjectDetailsService(
         return project.name == "rakudo" || project.basePath?.endsWith("rakudo") == true
     }
 
-    // Detail:  doesProjectContainRaku
+    // Detail:  doesProjectContainRakuCode
     // Purpose: Suppress all Raku-related services unless the project actually contains Raku files
     val doesProjectContainRakuCode: Boolean
         get() = state.doesProjectContainRakuCode
 
-    private fun doesProjectContainRakuCode(): Boolean {
-        val basePath = project.basePath ?: return false
-        val path = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(Path.of(basePath)) ?: return false
-        val foundFiles = mutableListOf<VirtualFile>()
-        val filter = VirtualFileFilter { file ->
-            (file.isDirectory && !file.path.endsWith(".idea"))
-                || rakuExtensions.contains(file.extension)
-                || (file.isFile && (file.extension.isNullOrEmpty() && file.readText().lines().first().contains("raku")))
-        }
-        VfsUtilCore.iterateChildrenRecursively(path, filter) {
-            if (it.isFile) foundFiles.add(it)
-            true
-        }
-        return foundFiles.isNotEmpty()
-    }
-
     private fun refreshState(state: RakudoProjectState): RakudoProjectState {
         if (!hasScannedForRakuFiles) {
-            state.doesProjectContainRakuCode = doesProjectContainRakuCode()
+            state.doesProjectContainRakuCode = CommaProjectUtil.projectContainsRakuCode(project)
             state.isProjectRakudoCore = determineIfProjectIsRakudoCore()
         }
         hasScannedForRakuFiles = true

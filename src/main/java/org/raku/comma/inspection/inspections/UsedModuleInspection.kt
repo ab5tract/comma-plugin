@@ -63,7 +63,7 @@ class UsedModuleInspection : RakuInspection() {
         val holderPackage = moduleDetails.moduleByProvide(moduleName)
         if (holderPackage != null) {
             // script-only project, so load installed modules in dependency service
-            if (metadata.noMeta) {
+            if (metadata.hasNoMeta) {
                     val editor = PsiEditorUtil.findEditor(element) ?: return
                     customHighlight(editor, highlightTextRange(moduleNameNode), RakuHighlighter.ALT_WARNING, HighlighterLayer.ERROR)
                     holder.registerProblem(element,
@@ -83,7 +83,7 @@ class UsedModuleInspection : RakuInspection() {
                 }
             }
         } else {
-            holder.registerProblem(element, DESCRIPTION_ECO_FORMAT.format(moduleName), CreateLocalModuleFix(moduleName))
+            holder.registerProblem(element, DESCRIPTION_MISSING_FROM_ECO_FORMAT.format(moduleName), CreateLocalModuleFix(moduleName))
         }
     }
 
@@ -96,7 +96,7 @@ class UsedModuleInspection : RakuInspection() {
     ): Boolean {
         return  metadata.providedNames.contains(moduleName)
                 || (moduleDetails.moduleDetails.provideToRakuFile[moduleName] != null
-                    && metadata.noMeta || (!metadata.noMeta && moduleDetails.dependencyInMeta(moduleName)))
+                    && (metadata.hasNoMeta || (metadata.hasMeta && moduleDetails.dependencyInMeta(moduleName))))
                 || (file.url.startsWith("mock://") && element.reference?.resolve() != null)
     }
 }

@@ -16,8 +16,6 @@ import kotlin.text.Regex;
 import org.raku.comma.parsing.RakuTokenTypes;
 import org.raku.comma.psi.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -150,7 +148,7 @@ public class InspectionConstants {
 
     public static class Signature {
         public static final String DESCRIPTION_NO_OPTIONAL_AFTER_NAMED =
-                "Cannot put an optional parameter %s after a named parameter";
+            "Cannot put an optional parameter %s after a named parameter";
         public static final String DESCRIPTION_NAMED_ARE_OPTIONAL =
             "Explicit `?` on a named parameter %s is redundant, as all nameds are optional by default";
         public static final String DESCRIPTION_CANNOT_REQUIRE_DEFAULT =
@@ -175,7 +173,7 @@ public class InspectionConstants {
         public static final String DESCRIPTION_META6_FORMAT = "Cannot find %s which is specified as a dependency in META6.json";
         public static final String DESCRIPTION_IN_META6_BUT_MISSING_FORMAT = "Module %s is in META6.json dependencies but is not installed";
         public static final String DESCRIPTION_MODULE_NOT_INSTALLED = "Module %s is is not installed for current Raku";
-        public static final String DESCRIPTION_ECO_FORMAT = "Cannot find %s in the ecosystem";
+        public static final String DESCRIPTION_MISSING_FROM_ECO_FORMAT = "Cannot find %s in the ecosystem";
     }
 
     public static class UndeclaredVariable {

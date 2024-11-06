@@ -6,7 +6,7 @@ import org.raku.comma.utils.CommaProjectUtil
 
 class RakuServiceStarter : ProjectActivity {
     override suspend fun execute(project: Project) {
-        if (! CommaProjectUtil.projectContainRakuCode(project)) return
+        if (! CommaProjectUtil.projectContainsRakuCode(project)) return
         CommaProjectUtil.refreshProjectState(project)
     }
 }

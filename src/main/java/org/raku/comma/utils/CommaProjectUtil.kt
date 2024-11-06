@@ -2,6 +2,7 @@ package org.raku.comma.utils
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.*
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportProgress
 import kotlinx.coroutines.Dispatchers
@@ -15,9 +16,25 @@ import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
 /**
- * A simpler, Comma-exclusive re-imagination of NewProjectUtil.
+ * Comma project-level utility functions. Often they simply pass a project on to a project-level service.
+ * Also provides the super-important refreshProjectState function, which took a lot of sweat and tears to
+ * get working correctly.
  */
 object CommaProjectUtil {
+
+    private val rakuExtensions = setOf("pm6", "pl6", "p6", "rakumod", "raku", "rakutest", "rakudoc")
+
+    @JvmStatic
+    fun canOpenFileAsProject(file: VirtualFile): Boolean {
+        if (file.isDirectory) {
+            if (file.toNioPath().resolve("META6.json").toFile().exists()) {
+                return true
+            }
+            return pathContainsRakuCode(file)
+        }
+        val fileName = file.name
+        return fileName == "META6.json" || fileName == "META.info"
+    }
 
     @JvmStatic
     fun isRakudoCoreProject(project: Project): Boolean {
@@ -25,8 +42,30 @@ object CommaProjectUtil {
     }
 
     @JvmStatic
-    fun projectContainRakuCode(project: Project): Boolean {
-        return project.service<RakuProjectDetailsService>().doesProjectContainRakuCode
+    fun projectContainsRakuCode(project: Project): Boolean {
+        val basePath = project.basePath ?: return false
+        val path = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(Path.of(basePath)) ?: return false
+        return pathContainsRakuCode(path)
+    }
+
+    @JvmStatic
+    fun pathContainsRakuCode(path: VirtualFile): Boolean {
+        val foundFiles = mutableListOf<VirtualFile>()
+        val filter = VirtualFileFilter { file ->
+            (file.isDirectory && !file.path.endsWith(".idea"))
+                    || rakuExtensions.contains(file.extension)
+                    || (file.isFile && (file.extension.isNullOrEmpty() && file.readText()
+                .lines()
+                .first()
+                .contains("raku")))
+        }
+        VfsUtilCore.iterateChildrenRecursively(path, filter) {
+            if (it.isFile) foundFiles.add(it)
+            // No need to recurse deeper if we have found even a single Raku file
+            if (foundFiles.isNotEmpty()) return@iterateChildrenRecursively false
+            return@iterateChildrenRecursively true
+        }
+        return foundFiles.isNotEmpty()
     }
 
     @JvmStatic
@@ -36,7 +75,7 @@ object CommaProjectUtil {
 
     @JvmStatic
     fun scriptOnlyProject(project: Project): Boolean {
-        return projectContainRakuCode(project) && !projectHasMetaFile(project)
+        return projectContainsRakuCode(project) && !projectHasMetaFile(project)
     }
 
     // Technically this should also be available at the Facet level so that different project-modules can have their

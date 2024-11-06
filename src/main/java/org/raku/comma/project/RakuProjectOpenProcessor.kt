@@ -7,11 +7,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.*
 import com.intellij.projectImport.ProjectOpenProcessor
 import com.intellij.util.containers.stream
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.Nls
+import org.raku.comma.utils.CommaProjectUtil
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -23,19 +24,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         get() = "Raku"
 
     override fun canOpenProject(file: VirtualFile): Boolean {
-        if (file.isDirectory) {
-            if (file.toNioPath().resolve("META6.json").toFile().exists()) {
-                return true
-            }
-            if (file.toNioPath().resolve("META.info").toFile().exists()) {
-                return true
-            }
-            if (file.path.endsWith("rakudo") && file.toNioPath().resolve("Configure.pl").toFile().exists()) {
-                return true
-            }
-        }
-        val fileName = file.name
-        return fileName == "META6.json" || fileName == "META.info"
+        return CommaProjectUtil.canOpenFileAsProject(file)
     }
 
     override fun doOpenProject(
