@@ -41,6 +41,9 @@ loop {
                 when X::Comp::Group {
                     report-compile-errors(flat .sorrows, .panic);
                 }
+                when X::REPL::InvalidEnvironment {
+                    note "Cannot run repl() from within Comma\'s internal REPL as it is not a TTY";
+                }
                 default {
                     note "\x01 RUNTIME-ERROR-START";
                     for .*await-backtrace {
