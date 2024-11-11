@@ -22,7 +22,7 @@ class GrepFirstInspection : RakuInspection() {
         }
         if (grepCall == null) return
 
-        val firstCall = element.postfix as RakuMethodCall // as? RakuMethodCall ?: return
+        val firstCall = element.postfix as? RakuMethodCall ?: return
 
         if (firstCall.callName != ".first") return
 
