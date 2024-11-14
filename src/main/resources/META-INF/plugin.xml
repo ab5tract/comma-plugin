@@ -147,8 +147,8 @@
 
     <enterHandlerDelegate implementation="org.raku.comma.editor.RakuEnterDelegate"/>
     <lang.braceMatcher language="Raku" implementationClass="org.raku.comma.editor.RakuBraceMatcher"/>
-    <lang.smartEnterProcessor language="Raku"
-                              implementationClass="org.raku.comma.editor.smartEnter.RakuSmartEnterProcessor"/>
+<!--    <lang.smartEnterProcessor language="Raku"-->
+<!--                              implementationClass="org.raku.comma.editor.smartEnter.RakuSmartEnterProcessor"/>-->
     <enterBetweenBracesDelegate language="Raku"
                                 implementationClass="org.raku.comma.editor.RakuEnterBetweenBracesDelegate"/>
 
