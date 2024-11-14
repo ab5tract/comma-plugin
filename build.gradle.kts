@@ -1,4 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -51,7 +52,11 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            ide(IntelliJPlatformType.IntellijIdeaCommunity, "2024.2")
+            select {
+                types = listOf(IntelliJPlatformType.values().toList().random())
+                channels = listOf(ProductRelease.Channel.RELEASE)
+                sinceBuild = "242"
+            }
         }
     }
 }
