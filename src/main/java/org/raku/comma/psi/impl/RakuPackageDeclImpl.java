@@ -193,7 +193,7 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
                     if (collector.isSatisfied()) return;
                 }
                 else if (nestedStub instanceof RakuScopedDeclStub scopedVar) {
-                    List<StubElement> stubsUnderScoped = scopedVar.getChildrenStubs();
+                    List<StubElement<?>> stubsUnderScoped = scopedVar.getChildrenStubs();
                     for (StubElement<?> var : stubsUnderScoped) {
                         if (var instanceof RakuVariableDeclStub declStub) {
                             if (!declStub.getScope().equals("has"))
@@ -245,7 +245,7 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
         boolean isGrammar = getPackageKind().equals("grammar");
 
         if (stub != null) {
-            List<StubElement> children = stub.getChildrenStubs();
+            List<StubElement<?>> children = stub.getChildrenStubs();
             for (StubElement<?> child : children) {
                 if (!(child instanceof RakuTraitStub traitStub)) continue;
                 if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
@@ -492,7 +492,7 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
             return super.findTrait(mod, name);
         }
 
-        List<StubElement> children = stub.getChildrenStubs();
+        List<StubElement<?>> children = stub.getChildrenStubs();
         for (StubElement<?> child : children) {
             if (!(child instanceof RakuTraitStub traitStub)) {
                 continue;

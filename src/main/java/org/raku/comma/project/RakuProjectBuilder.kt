@@ -53,7 +53,7 @@ class RakuProjectBuilder : ProjectBuilder() {
     override fun commit(
         project: Project,
         model: ModifiableModuleModel?,
-        modulesProvider: ModulesProvider
+        modulesProvider: ModulesProvider?
     ): List<Module> {
         try {
             WriteAction.runAndWait<RuntimeException> {
@@ -116,14 +116,6 @@ class RakuProjectBuilder : ProjectBuilder() {
         }
 
         return emptyList()
-    }
-
-    override fun isUpdate(): Boolean {
-        return myUpdate
-    }
-
-    fun setUpdate(update: Boolean) {
-        myUpdate = update
     }
 
     private fun addSourceDirectory(name: String, contentRoot: VirtualFile, entry: ContentEntry, isTest: Boolean) {

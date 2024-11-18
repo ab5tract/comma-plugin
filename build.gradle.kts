@@ -48,6 +48,10 @@ intellijPlatform {
         id = "org.raku.comma"
         name = "Comma for Raku"
         version = "2.0"
+
+        ideaVersion {
+            sinceBuild = "242"
+        }
     }
 
     pluginVerification {
@@ -63,7 +67,7 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.2")
+        intellijIdeaCommunity("2024.3")
 
         bundledPlugin("com.intellij.java")
 
