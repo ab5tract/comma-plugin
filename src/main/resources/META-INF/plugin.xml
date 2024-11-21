@@ -58,10 +58,10 @@
   <xi:include href="/META-INF/inspections.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/actions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-  <!--  <extensions defaultExtensionNs="org.raku">-->
-  <!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
-  <!--    <frameworkCall implementation="cro.org.raku.comma.CroTemplateCall"/>-->
-  <!--  </extensions>-->
+    <extensions defaultExtensionNs="org.raku">
+      <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>
+      <frameworkCall implementation="cro.org.raku.comma.CroTemplateCall"/>
+    </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
 
@@ -168,8 +168,8 @@
     <!--      order="FIRST"/>-->
 
     <!-- TODO: Figure out why the getActionUpdateThread() is ignored and we get exceptions about EDT_OLD -->
-    <!--    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"-->
-    <!--              fieldName="INSTANCE" extensions="crotmp"/>-->
+    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"
+              fieldName="INSTANCE" extensions="crotmp"/>
     <lang.parserDefinition language="CroTemplate"
                            implementationClass="org.raku.comma.cro.template.parsing.CroTemplateParserDefinition"/>
     <lang.syntaxHighlighterFactory language="CroTemplate"
