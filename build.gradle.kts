@@ -82,6 +82,11 @@ abstract class BumpRakuPluginBetaVersion: GetRakuPluginBetaVersion() {
 }
 ////// END VERSION STUFF
 
+tasks.register<IdeaVersionTask>("retrieveIdeaVersion") {
+    group = "version"
+    description = "Retrieve IntelliJ IDEA version"
+}
+
 tasks.register<GetRakuPluginBetaVersion>("retrieveBetaVersion") {
     group = "version"
     description = "Retrieve plugin beta version"
@@ -92,11 +97,6 @@ tasks.register<BumpRakuPluginBetaVersion>("bumpBetaVersion") {
     group = "version"
     description = "Bump plugin beta version"
     gitTag = currentRakuPluginVersion
-}
-
-tasks.register<IdeaVersionTask>("retrieveIdeaVersion") {
-    group = "version"
-    description = "Retrieve IntelliJ IDEA version"
 }
 
 plugins {
