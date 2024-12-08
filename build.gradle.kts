@@ -23,7 +23,7 @@ val ideaBuildVersion = "2024.3"
 //        false   -> RakuPluginVersion(ideaBuildVersion, 1)
 //    }
 //}
-val currentRakuPluginVersion = "2024.3-beta.2"
+val currentRakuPluginVersion = "2024.3-beta.1"
 //try {
 //    File("currentDraftPluginVersion").writeText(currentRakuPluginVersion)
 //} catch (e: IOException) {
