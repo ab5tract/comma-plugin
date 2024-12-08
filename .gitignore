@@ -4,6 +4,7 @@
 .idea/kotlinc.xml
 .intellijPlatform/
 out/
+.precomp/
 
 .kotlin/
 
