@@ -1,43 +1,109 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
-import java.io.IOException
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+
 
 fun properties(key: String) = project.findProperty(key).toString()
 
-data class RakuPluginVersion(val idea: String, val beta: Int) {
-    override fun toString(): String { return "$idea-beta.$beta" }
+// TODO: Don't include all of this mess in one file
+//////// VERSION STUFF
+val ideaBuildVersion = File(".versions/idea-version").readText(Charsets.UTF_8)
+
+fun determineCurrentRakuBetaPlugin(): String {
+    val betaVersionPath = Path(".versions/raku-beta-version")
+
+    return when(betaVersionPath.exists()) {
+        true  -> betaVersionPath.toFile().readText().trim()
+        false -> providers.exec {
+                     commandLine("git", "tag", "--merged", "main", "--sort=taggerdate")
+                 }.standardOutput.asText.get().trim().lines().last()
+    }
+}
+val currentRakuPluginVersion = determineCurrentRakuBetaPlugin()
+
+abstract class IdeaVersionTask : DefaultTask() {
+    @Input
+    val ideaFileName: String = ".versions/idea-version"
+
+    @InputFile
+    val ideaVersionFile = File(ideaFileName)
+
+    @Input
+    val ideaVersion: String = ideaVersionFile.readText()
+
+    @TaskAction
+    open fun action() {
+        println(ideaVersion)
+    }
 }
 
-// Versioning and stuff
-// TODO: Migrate to a specific gradle task
-val ideaBuildVersion = "2024.3"
-//fun determineWorkingPluginVersion(): RakuPluginVersion {
-//    val output = providers.exec { commandLine("git", "describe", "--tags") }
-//                          .standardOutput
-//                          .asText.get().trim()
-//    val lastBetaVersion = output.split(".").last().toInt()
-//    val lastIdeaBuildVersion = output.split("-").first()
-//
-//    return when(ideaBuildVersion == lastIdeaBuildVersion) {
-//        true    -> RakuPluginVersion(lastIdeaBuildVersion, lastBetaVersion + 1)
-//        false   -> RakuPluginVersion(ideaBuildVersion, 1)
-//    }
-//}
-val currentRakuPluginVersion = "2024.3-beta.1"
-//try {
-//    File("currentDraftPluginVersion").writeText(currentRakuPluginVersion)
-//} catch (e: IOException) {
-//    println("Unable to write current Raku plugin version ($currentRakuPluginVersion) to file 'currentDraftPluginVersion'\n$e")
-//}
+abstract class GetRakuPluginBetaVersion : IdeaVersionTask() {
+    data class RakuPluginBetaVersion(val idea: String, val beta: Int) {
+        override fun toString(): String { return "$idea-beta.$beta" }
+    }
+
+    @get:Input
+    abstract var gitTag: String
+
+    @Input
+    val betaVersionFileName = ".versions/raku-beta-version"
+
+    @OutputFile
+    val betaVersionFile = File(betaVersionFileName)
+
+    fun determinePluginVersion(): RakuPluginBetaVersion {
+        val lastBetaVersion = gitTag.split(".").last().toInt()
+        val lastIdeaBuildVersion = gitTag.split("-").first()
+        return RakuPluginBetaVersion(lastIdeaBuildVersion, lastBetaVersion)
+    }
+
+    @TaskAction
+    override fun action() {
+        betaVersionFile.parentFile.mkdirs()
+        betaVersionFile.writeText(determinePluginVersion().toString())
+        println(determinePluginVersion().toString())
+    }
+}
+
+abstract class BumpRakuPluginBetaVersion: GetRakuPluginBetaVersion() {
+    @TaskAction
+    override fun action() {
+        val oldPluginVersion = determinePluginVersion()
+
+        val newPluginVersion = when (ideaVersion == oldPluginVersion.idea) {
+            true  -> RakuPluginBetaVersion(oldPluginVersion.idea, oldPluginVersion.beta + 1)
+            false -> RakuPluginBetaVersion(ideaVersion, 1)
+        }
+
+        betaVersionFile.writeText(newPluginVersion.toString())
+        println(newPluginVersion)
+    }
+}
+////// END VERSION STUFF
+
+tasks.register<IdeaVersionTask>("retrieveIdeaVersion") {
+    group = "version"
+    description = "Retrieve IntelliJ IDEA version"
+}
+
+tasks.register<GetRakuPluginBetaVersion>("retrieveBetaVersion") {
+    group = "version"
+    description = "Retrieve plugin beta version"
+    gitTag = currentRakuPluginVersion
+}
+
+tasks.register<BumpRakuPluginBetaVersion>("bumpBetaVersion") {
+    group = "version"
+    description = "Bump plugin beta version"
+    gitTag = currentRakuPluginVersion
+}
 
 plugins {
     // Java support
     id("java")
     // Gradle IntelliJ Plugin
     id("org.jetbrains.intellij.platform") version "2.0.1"
-
-// TODO: Re-enable if we land on Grammar-Kit as the best option for NQP
-//    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
@@ -59,15 +125,6 @@ java {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
-
-// TODO: Re-enable if we land on Grammar-Kit as our best option for NQP
-//sourceSets {
-//  main {
-//    java {
-//      srcDirs("src/main/gen")
-//    }
-//  }
-//}
 
 intellijPlatform {
     pluginConfiguration {
