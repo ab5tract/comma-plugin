@@ -1,7 +1,34 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+import java.io.IOException
 
 fun properties(key: String) = project.findProperty(key).toString()
+
+data class RakuPluginVersion(val idea: String, val beta: Int) {
+    override fun toString(): String { return "$idea-beta.$beta" }
+}
+
+// Versioning and stuff
+// TODO: Migrate to a specific gradle task
+val ideaBuildVersion = "2024.3"
+fun determineWorkingPluginVersion(): RakuPluginVersion {
+    val output = providers.exec { commandLine("git", "describe", "--tags") }
+                          .standardOutput
+                          .asText.get().trim()
+    val lastBetaVersion = output.split(".").last().toInt()
+    val lastIdeaBuildVersion = output.split("-").first()
+
+    return when(ideaBuildVersion == lastIdeaBuildVersion) {
+        true    -> RakuPluginVersion(lastIdeaBuildVersion, lastBetaVersion + 1)
+        false   -> RakuPluginVersion(ideaBuildVersion, 1)
+    }
+}
+val currentRakuPluginVersion = determineWorkingPluginVersion().toString()
+try {
+    File("currentDraftPluginVersion").writeText(currentRakuPluginVersion)
+} catch (e: IOException) {
+    println("Unable to write current Raku plugin version ($currentRakuPluginVersion) to file 'currentDraftPluginVersion'\n$e")
+}
 
 plugins {
     // Java support
@@ -16,9 +43,8 @@ plugins {
     kotlin("plugin.serialization") version "2.0.20"
 }
 
-group = properties("pluginGroup")
-version = "2.0"
-
+group   = properties("pluginGroup")
+version = currentRakuPluginVersion
 // Configure project's dependencies
 repositories {
     mavenCentral()
@@ -46,8 +72,8 @@ java {
 intellijPlatform {
     pluginConfiguration {
         id = "org.raku.comma"
-        name = "Comma for Raku"
-        version = "2.0"
+        name = "Raku"
+        version = currentRakuPluginVersion
 
         ideaVersion {
             sinceBuild = "242"
@@ -67,7 +93,7 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.3")
+        intellijIdeaCommunity(ideaBuildVersion)
 
         bundledPlugin("com.intellij.java")
 

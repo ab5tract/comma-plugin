@@ -1,6 +1,6 @@
 <idea-plugin>
   <extensionPoints>
-    <extensionPoint qualifiedName="org.raku.frameworkCall"
+    <extensionPoint qualifiedName="org.raku.comma.frameworkCall"
                     interface="org.raku.comma.extensions.RakuFrameworkCall"/>
   </extensionPoints>
 </idea-plugin>

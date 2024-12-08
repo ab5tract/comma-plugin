@@ -17,10 +17,10 @@
 <!--            description="Create new Raku documentation file in current project" icon="/icons/camelia.png">-->
 <!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewTestDialogAction"/>-->
 <!--    </action>-->
-<!--    <action id="RakuPlugin.NewCroTemplateAction" class="org.raku.comma.cro.actions.NewCroTemplateAction" text="Cro Template"-->
-<!--            description="Create new Cro template in current project" icon="/icons/cro.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewPodDocumentation"/>-->
-<!--    </action>-->
+    <action id="RakuPlugin.NewCroTemplateAction" class="org.raku.comma.cro.actions.NewCroTemplateAction" text="Cro Template"
+            description="Create new Cro template in current project" icon="/icons/cro.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewRakuFileAction"/>
+    </action>
     <action id="org.raku.comma.repl.RakuLaunchReplAction" class="org.raku.comma.repl.RakuLaunchReplAction" text="Launch Raku REPL"
             description="Runs the Raku REPL associated with the current project&#39;s SDK.">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
