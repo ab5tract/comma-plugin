@@ -1,7 +1,7 @@
-import org.gradle.kotlin.dsl.idea
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
-import java.io.IOException
+import kotlin.io.path.Path
+import kotlin.io.path.exists
 
 
 fun properties(key: String) = project.findProperty(key).toString()
@@ -9,9 +9,18 @@ fun properties(key: String) = project.findProperty(key).toString()
 // TODO: Don't include all of this mess in one file
 //////// VERSION STUFF
 val ideaBuildVersion = File(".versions/idea-version").readText(Charsets.UTF_8)
-val currentRakuPluginVersion =
-    providers.exec { commandLine("git", "tag", "--merged", "main", "--sort=taggerdate") }
-             .standardOutput.asText.get().trim().lines().last()
+
+fun determineCurrentRakuBetaPlugin(): String {
+    val betaVersionPath = Path(".versions/raku-beta-version")
+
+    return when(betaVersionPath.exists()) {
+        true  -> betaVersionPath.toFile().readText().trim()
+        false -> providers.exec {
+                     commandLine("git", "tag", "--merged", "main", "--sort=taggerdate")
+                 }.standardOutput.asText.get().trim().lines().last()
+    }
+}
+val currentRakuPluginVersion = determineCurrentRakuBetaPlugin()
 
 abstract class IdeaVersionTask : DefaultTask() {
     @Input
