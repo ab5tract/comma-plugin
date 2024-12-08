@@ -3,7 +3,7 @@ name: Release plugin zip
 on:
   push:
     tags:
-      - "v*"
+      - "*-beta.*"
 
 jobs:
   build:
