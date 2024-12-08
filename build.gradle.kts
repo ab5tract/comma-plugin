@@ -7,46 +7,87 @@ import java.io.IOException
 fun properties(key: String) = project.findProperty(key).toString()
 
 // TODO: Don't include all of this mess in one file
-val ideaBuildVersion = "2024.3"
+//////// VERSION STUFF
+val ideaBuildVersion = File(".versions/idea-version").readText(Charsets.UTF_8)
+val currentRakuPluginVersion =
+    providers.exec { commandLine("git", "tag", "--merged", "main", "--sort=taggerdate") }
+             .standardOutput.asText.get().trim().lines().last()
 
+abstract class IdeaVersionTask : DefaultTask() {
+    @Input
+    val ideaFileName: String = ".versions/idea-version"
 
-//fun determineWorkingPluginVersion(): RakuPluginVersion {
-//    val output = providers.exec { commandLine("git", "describe", "--tags") }
-//        .standardOutput
-//        .asText.get().trim()
-//    val lastBetaVersion = output.split(".").last().toInt()
-//    val lastIdeaBuildVersion = output.split("-").first()
-//
-//    return when (ideaBuildVersion == lastIdeaBuildVersion) {
-//        true  -> RakuPluginVersion(lastIdeaBuildVersion, lastBetaVersion)
-//        false -> RakuPluginVersion(ideaBuildVersion, 1)
-//    }
-//}
+    @InputFile
+    val ideaVersionFile = File(ideaFileName)
 
-//tasks.register<GetRakuPluginBetaVersion>("retrieveBetaVersion") {
-//    group = "version"
-//    description = "Retrieve plugin beta version"
-//}
-//
-//tasks.register<BumpRakuPluginBetaVersion>("bumpBetaVersion") {
-//    group = "version"
-//    description = "Bump plugin beta version"
-//}
-//
-//
-//tasks.register<IdeaVersion>("retrieveIdeaVersion") {
-//    group = "version"
-//    description = "Retrieve IntelliJ IDEA version"
-//}
+    @Input
+    val ideaVersion: String = ideaVersionFile.readText()
 
-// Versioning and stuff
-// TODO: Migrate to a specific gradle task
-//val ideaBuildVersion = "2024.3"
-val currentRakuPluginVersion = "2024.3-beta.1"
-try {
-    File("currentDraftPluginVersion").writeText(currentRakuPluginVersion)
-} catch (e: IOException) {
-    println("Unable to write current Raku plugin version ($currentRakuPluginVersion) to file 'currentDraftPluginVersion'\n$e")
+    @TaskAction
+    open fun action() {
+        println(ideaVersion)
+    }
+}
+
+abstract class GetRakuPluginBetaVersion : IdeaVersionTask() {
+    data class RakuPluginBetaVersion(val idea: String, val beta: Int) {
+        override fun toString(): String { return "$idea-beta.$beta" }
+    }
+
+    @get:Input
+    abstract var gitTag: String
+
+    @Input
+    val betaVersionFileName = ".versions/raku-beta-version"
+
+    @OutputFile
+    val betaVersionFile = File(betaVersionFileName)
+
+    fun determinePluginVersion(): RakuPluginBetaVersion {
+        val lastBetaVersion = gitTag.split(".").last().toInt()
+        val lastIdeaBuildVersion = gitTag.split("-").first()
+        return RakuPluginBetaVersion(lastIdeaBuildVersion, lastBetaVersion)
+    }
+
+    @TaskAction
+    override fun action() {
+        betaVersionFile.parentFile.mkdirs()
+        betaVersionFile.writeText(determinePluginVersion().toString())
+        println(determinePluginVersion().toString())
+    }
+}
+
+abstract class BumpRakuPluginBetaVersion: GetRakuPluginBetaVersion() {
+    @TaskAction
+    override fun action() {
+        val oldPluginVersion = determinePluginVersion()
+
+        val newPluginVersion = when (ideaVersion == oldPluginVersion.idea) {
+            true  -> RakuPluginBetaVersion(oldPluginVersion.idea, oldPluginVersion.beta + 1)
+            false -> RakuPluginBetaVersion(ideaVersion, 1)
+        }
+
+        betaVersionFile.writeText(newPluginVersion.toString())
+        println(newPluginVersion)
+    }
+}
+////// END VERSION STUFF
+
+tasks.register<GetRakuPluginBetaVersion>("retrieveBetaVersion") {
+    group = "version"
+    description = "Retrieve plugin beta version"
+    gitTag = currentRakuPluginVersion
+}
+
+tasks.register<BumpRakuPluginBetaVersion>("bumpBetaVersion") {
+    group = "version"
+    description = "Bump plugin beta version"
+    gitTag = currentRakuPluginVersion
+}
+
+tasks.register<IdeaVersionTask>("retrieveIdeaVersion") {
+    group = "version"
+    description = "Retrieve IntelliJ IDEA version"
 }
 
 plugins {
