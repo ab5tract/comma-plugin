@@ -200,7 +200,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
     public FileType getFileType() {
         String name = getName();
         for (RakuMultiExtensionFileType type : RAKU_FILE_TYPES) {
-            for (String ext : type.getExtensions()) {
+            for (String ext : type.extensions()) {
                 if (name.endsWith(ext)) {
                     return (FileType) type;
                 }

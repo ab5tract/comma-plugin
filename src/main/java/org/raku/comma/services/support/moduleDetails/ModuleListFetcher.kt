@@ -11,9 +11,8 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.json.JSONException
-import org.raku.comma.metadata.data.ExternalMetaFile
+import org.raku.comma.metadata.ExternalMetaFile
 import org.raku.comma.services.application.EcosystemDetailsState
-import org.raku.comma.services.project.ModuleDetailsState
 import org.raku.comma.utils.RakuUtils
 import java.io.IOException
 import java.util.Map.copyOf
