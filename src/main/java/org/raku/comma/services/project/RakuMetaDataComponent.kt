@@ -32,7 +32,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.raku.comma.RakuIcons
-import org.raku.comma.metadata.data.MetaFile
+import org.raku.comma.metadata.MetaFile
 import org.raku.comma.utils.CommaProjectUtil
 import org.raku.comma.utils.RakuUtils
 import java.io.IOException

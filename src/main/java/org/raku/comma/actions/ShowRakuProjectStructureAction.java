@@ -1,3 +1,5 @@
+// TODO: Re-integrate the structure work so that this action can live again
+
 //package org.raku.comma.actions;
 //
 //import com.intellij.openapi.actionSystem.ActionUpdateThread;

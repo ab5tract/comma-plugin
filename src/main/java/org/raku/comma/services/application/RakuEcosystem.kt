@@ -3,7 +3,7 @@ package org.raku.comma.services.application
 import com.intellij.openapi.components.Service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.raku.comma.metadata.data.ExternalMetaFile
+import org.raku.comma.metadata.ExternalMetaFile
 import org.raku.comma.services.support.moduleDetails.ModuleListFetcher
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean

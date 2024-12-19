@@ -11,11 +11,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.intellij.psi.PsiFile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
-import org.raku.comma.metadata.data.ExternalMetaFile
+import org.raku.comma.metadata.ExternalMetaFile
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.services.application.RakuEcosystem
 import org.raku.comma.services.support.moduleDetails.DependencyDetails
-import org.raku.comma.services.support.moduleDetails.ModuleListFetcher
 import org.raku.comma.services.support.moduleDetails.ProjectModelSync
 import org.raku.comma.utils.CommaProjectUtil
 

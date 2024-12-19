@@ -8,7 +8,7 @@ import com.intellij.platform.util.progress.reportProgress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import org.raku.comma.metadata.data.ExternalMetaFile
+import org.raku.comma.metadata.ExternalMetaFile
 import org.raku.comma.services.application.RakuEcosystem
 import org.raku.comma.services.project.*
 import java.io.File
