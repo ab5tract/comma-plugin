@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+// TODO: Convert to Kotlin once there is clarity on companion objects that contain more than fricking loggers
+
 @InternalIgnoreDependencyViolation
 public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBlockCall, RakuRoutineDecl> {
     @Nullable

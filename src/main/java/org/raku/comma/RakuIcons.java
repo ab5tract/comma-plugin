@@ -6,6 +6,8 @@ import com.intellij.util.ReflectionUtil;
 import javax.swing.*;
 import java.util.Objects;
 
+// TODO: Convert to Kotlin once there is clear guidance for how to handle static constants of non-simple types
+
 public class RakuIcons {
     public static final Icon CAMELIA_13x13 = IconLoader.getIcon("/icons/camelia-13x13.png",
                                                                 Objects.requireNonNull(ReflectionUtil.getGrandCallerClass()));

@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class RakuCompleteCroRunConfigurationType extends ConfigurationTypeBase {
-    protected static final String RAKU_CRO_RUN_CONFIGURATION_ID = "RKAU_CRO_RUN_CONFIGURATION";
+    protected static final String RAKU_CRO_RUN_CONFIGURATION_ID = "RAKU_CRO_RUN_CONFIGURATION";
 
     protected RakuCompleteCroRunConfigurationType() {
         super(RAKU_CRO_RUN_CONFIGURATION_ID, "Cro Service", "Run Cro service", RakuIcons.CRO);
