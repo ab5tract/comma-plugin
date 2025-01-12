@@ -22,7 +22,6 @@ import org.raku.comma.module.RakuModuleType
 import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.utils.CommaProjectUtil
 import java.io.File
-import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.Icon
 
@@ -65,7 +64,7 @@ class RakuProjectBuilder : ProjectBuilder() {
                 val contentRoot = lfs.findFileByPath(path.substring(5)) ?: return@runAndWait
 
                 val modelToPatch = model ?: ModuleManager.getInstance(project).getModifiableModel()
-                val module = modelToPatch.newModule(getModuleFilePath(project), RakuModuleType.getInstance().id)
+                val module = modelToPatch.newModule(getModuleFilePath(project), RakuModuleType.instance.id)
 
                 val rootModel = ModuleRootManager.getInstance(module).modifiableModel
                 val entry = rootModel.addContentEntry(contentRoot)

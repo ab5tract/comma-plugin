@@ -16,11 +16,14 @@ import com.intellij.openapi.util.Pair
 import com.intellij.openapi.vfs.LocalFileSystem
 import org.raku.comma.language.RakuLanguageVersion
 import org.raku.comma.language.RakuLanguageVersionService
-import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.module.RakuModuleType
-import org.raku.comma.module.builder.*
+import org.raku.comma.module.builder.RakuModuleBuilderApplication
+import org.raku.comma.module.builder.RakuModuleBuilderGeneric
+import org.raku.comma.module.builder.RakuModuleBuilderModule
+import org.raku.comma.module.builder.RakuModuleBuilderScript
 import org.raku.comma.project.wizard.steps.RakuModuleNameStep
 import org.raku.comma.project.wizard.steps.RakuProjectTypeStep
+import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.services.project.RakuProjectSdkService
 import org.raku.comma.utils.RakuProjectType
 import java.lang.reflect.InvocationTargetException
@@ -51,7 +54,7 @@ class RakuModuleWizardBuilder : ModuleBuilder() {
     var projectName: String? = null
 
     override fun getModuleType(): ModuleType<*> {
-        return RakuModuleType.getInstance()
+        return RakuModuleType.instance
     }
 
     override fun setupRootModel(model: ModifiableRootModel) {

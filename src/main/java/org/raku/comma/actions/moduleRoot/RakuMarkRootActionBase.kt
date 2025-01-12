@@ -18,7 +18,7 @@ abstract class RakuMarkRootActionBase(private val testMarker: Boolean) : MarkRoo
     }
 
     override fun isEnabled(selection: RootsSelection, module: Module): Boolean {
-        if (!ModuleType.`is`(module, RakuModuleType.getInstance())) return false
+        if (!ModuleType.`is`(module, RakuModuleType.instance)) return false
 
         for (root in selection.mySelectedRoots) {
             if (testMarker && root.isTestSource()) return false

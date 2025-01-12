@@ -76,9 +76,8 @@
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakuFileShebangTypeDetector"/>
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakuFileShebangTypeDetector"/>
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakudoFileShebangTypeDetector"/>
-
+    <moduleType id="RAKU_MODULE_TYPE" implementationClass="org.raku.comma.module.RakuModuleType"/>
     <moduleBuilder id="RAKU_MODULE_TYPE" builderClass="org.raku.comma.project.wizard.RakuModuleWizardBuilder"/>
-    ~
     <programRunner implementation="org.raku.comma.debugger.RakuDebugRunner"/>
     <xdebugger.breakpointType implementation="org.raku.comma.debugger.RakuLineBreakpointType"/>
     <lang.syntaxHighlighterFactory language="Raku"
