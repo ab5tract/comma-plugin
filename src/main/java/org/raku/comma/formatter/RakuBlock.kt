@@ -1,478 +1,529 @@
-package org.raku.comma.formatter;
+package org.raku.comma.formatter
 
-import com.intellij.formatting.*;
-import com.intellij.formatting.templateLanguages.BlockWithParent;
-import com.intellij.lang.ASTNode;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.util.Pair;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
-import com.intellij.psi.formatter.common.AbstractBlock;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.containers.ContainerUtil;
-import org.raku.comma.parsing.RakuElementTypes;
-import org.raku.comma.parsing.RakuTokenTypes;
-import org.raku.comma.psi.*;
-import org.raku.comma.utils.RakuPsiUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.formatting.*
+import com.intellij.formatting.templateLanguages.BlockWithParent
+import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.Pair
+import com.intellij.psi.PsiElement
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
+import com.intellij.psi.formatter.common.AbstractBlock
+import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.containers.ContainerUtil
+import org.raku.comma.formatter.RakuFormattingModelBuilder.RakuSpacingRule
+import org.raku.comma.parsing.RakuElementTypes
+import org.raku.comma.parsing.RakuOPPElementTypes
+import org.raku.comma.parsing.RakuTokenTypes
+import org.raku.comma.psi.*
+import org.raku.comma.utils.RakuPsiUtil
+import java.util.*
+import java.util.function.BiFunction
+import java.util.function.Function
 
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+internal class RakuBlock : AbstractBlock, BlockWithParent {
+    private val rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
+    private val myCommonSettings: CommonCodeStyleSettings?
+    private val myCustomSettings: RakuCodeStyleSettings
+    private var myParent: BlockWithParent? = null
+    private val isStatementContinuation: Boolean?
 
-import static org.raku.comma.parsing.RakuElementTypes.*;
-import static org.raku.comma.parsing.RakuOPPElementTypes.INFIX_APPLICATION;
-import static org.raku.comma.parsing.RakuTokenTypes.*;
+    private val WHITESPACES = TokenSet.create(
+        RakuTokenTypes.UNV_WHITE_SPACE,
+        RakuTokenTypes.WHITE_SPACE,
+        RakuTokenTypes.VERTICAL_WHITE_SPACE,
+        RakuTokenTypes.UNSP_WHITE_SPACE
+    )
+    private var children: ArrayList<Block?>? = null
 
-class RakuBlock extends AbstractBlock implements BlockWithParent {
-    private final static boolean DEBUG_MODE = false;
-    private static final TokenSet TRAIT_CARRIERS = TokenSet.create(
-            PACKAGE_DECLARATION,
-            ROUTINE_DECLARATION,
-            VARIABLE_DECLARATION,
-            PARAMETER,
-            REGEX_DECLARATION,
-            ENUM,
-            SUBSET,
-            CONSTANT
-    );
-    private final List<BiFunction<RakuBlock, RakuBlock, Spacing>> myRules;
-    private final CommonCodeStyleSettings myCommonSettings;
-    private final RakuCodeStyleSettings myCustomSettings;
-    private BlockWithParent myParent;
-    private final Boolean isStatementContinuation;
-
-    private final TokenSet WHITESPACES = TokenSet.create(
-            UNV_WHITE_SPACE,
-            WHITE_SPACE,
-            VERTICAL_WHITE_SPACE,
-            UNSP_WHITE_SPACE
-    );
-    private ArrayList<Block> children;
-
-    RakuBlock(ASTNode node,
-              Wrap wrap,
-              Alignment align,
-              CommonCodeStyleSettings commonSettings,
-              RakuCodeStyleSettings customSettings,
-              List<BiFunction<RakuBlock, RakuBlock, Spacing>> rules)
-    {
-        super(node, wrap, align);
-        myRules = rules;
-        myCommonSettings = commonSettings;
-        myCustomSettings = customSettings;
-        this.isStatementContinuation = false;
+    constructor(
+        node: ASTNode,
+        wrap: Wrap?,
+        align: Alignment?,
+        commonSettings: CommonCodeStyleSettings?,
+        customSettings: RakuCodeStyleSettings,
+        rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
+    ) : super(node, wrap, align) {
+        this@RakuBlock.rules = rules
+        myCommonSettings = commonSettings
+        myCustomSettings = customSettings
+        this.isStatementContinuation = false
     }
 
-    private RakuBlock(ASTNode node,
-                      Wrap wrap,
-                      Alignment align,
-                      Boolean isStatementContinuation,
-                      CommonCodeStyleSettings commonSettings,
-                      RakuCodeStyleSettings customSettings,
-                      List<BiFunction<RakuBlock, RakuBlock, Spacing>> rules)
-    {
-        super(node, wrap, align);
-        myRules = rules;
-        myCommonSettings = commonSettings;
-        myCustomSettings = customSettings;
-        this.isStatementContinuation = isStatementContinuation;
+    private constructor(
+        node: ASTNode,
+        wrap: Wrap?,
+        align: Alignment?,
+        isStatementContinuation: Boolean?,
+        commonSettings: CommonCodeStyleSettings?,
+        customSettings: RakuCodeStyleSettings,
+        rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
+    ) : super(node, wrap, align) {
+        this@RakuBlock.rules = rules
+        myCommonSettings = commonSettings
+        myCustomSettings = customSettings
+        this.isStatementContinuation = isStatementContinuation
     }
 
-    @Override
-    protected List<Block> buildChildren() {
-        if (isLeaf()) return EMPTY;
-        final ArrayList<Block> children = new ArrayList<>();
+    override fun buildChildren(): MutableList<Block?>? {
+        if (isLeaf) return EMPTY
 
-        Pair<Function<ASTNode, Boolean>, Alignment> alignFunction = calculateAlignment(myNode);
+        val children = ArrayList<Block?>()
+        val alignFunction = calculateAlignment(myNode)
 
-        for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
-            IElementType elementType = child.getElementType();
-            if (WHITESPACES.contains(elementType)) continue;
+        var child = node.firstChildNode
+        while (child != null) {
+            val elementType = child.elementType
+            if (WHITESPACES.contains(elementType)) {
+                child = child.treeNext
+                continue
+            }
 
-            RakuBlock childBlock;
-            Boolean childIsStatementContinuation = null;
+            val childBlock: RakuBlock?
+            var childIsStatementContinuation: Boolean? = null
             if (isStatementContinuation != null && isStatementContinuation) {
-                childIsStatementContinuation = false;
+                childIsStatementContinuation = false
             } else if (nodeInStatementContinuation(child)) {
-                childIsStatementContinuation = true;
+                childIsStatementContinuation = true
             }
-            Alignment align = alignFunction == null
-                              ? null
-                              : alignFunction.first.apply(child)
-                                ? alignFunction.second
-                                : null;
-            childBlock = new RakuBlock(child, null, align, childIsStatementContinuation, myCommonSettings, myCustomSettings, myRules);
-            childBlock.setParent(this);
-            children.add(childBlock);
+            val align = if (alignFunction == null)
+                            null
+                        else
+                            if (alignFunction.first!!.apply(child) == true)
+                                alignFunction.second
+                            else
+                                null
+            childBlock = RakuBlock(child,
+                                   null,
+                                   align,
+                                   childIsStatementContinuation,
+                                   myCommonSettings,
+                                   myCustomSettings,
+                                   rules)
+            childBlock.parent = this
+            children.add(childBlock)
+            child = child.treeNext
         }
-        return this.children = children;
+        return children.also { this.children = it }
     }
 
-    @Override
-    public Wrap getWrap() {
+    override fun getWrap(): Wrap? {
         // Basic sanity check: we don't wrap anything when interpolated in a str literal
-        if (!(PsiTreeUtil.getParentOfType(myNode.getPsi(), RakuFile.class, RakuStrLiteral.class, RakuHeredoc.class) instanceof RakuFile)) {
-            return null;
-        }
+        if (PsiTreeUtil.getParentOfType<RakuPsiElement?>(
+                myNode.psi,
+                RakuFile::class.java,
+                RakuStrLiteral::class.java,
+                RakuHeredoc::class.java
+            ) !is RakuFile
+        ) return null
 
-        if (myNode.getElementType() == PARAMETER && myCustomSettings.PARAMETER_WRAP) {
-            return Wrap.createWrap(WrapType.NORMAL, true);
-        }
+        if (myNode.elementType === RakuElementTypes.PARAMETER && myCustomSettings.PARAMETER_WRAP)
+            return Wrap.createWrap(WrapType.NORMAL, true)
 
-        if (myNode.getElementType() == RakuElementTypes.TRAIT && myCustomSettings.TRAIT_WRAP) {
-            return Wrap.createWrap(WrapType.NORMAL, true);
-        }
+        if (myNode.elementType === RakuElementTypes.TRAIT && myCustomSettings.TRAIT_WRAP)
+            return Wrap.createWrap(WrapType.NORMAL, true)
 
-        if (myNode.getPsi() instanceof RakuMethodCall
-                && myNode.getText().startsWith(".")
-                && myCustomSettings.METHOD_CALL_WRAP)
+        if (myNode.psi is RakuMethodCall
+        && myNode.text.startsWith(".")
+        && myCustomSettings.METHOD_CALL_WRAP)
+            return Wrap.createWrap(WrapType.NORMAL, false)
+
+        if (myNode.treeParent != null
+        && myNode.treeParent.psi is RakuInfixApplication
+        && myNode.elementType !== RakuTokenTypes.NULL_TERM
+        && myNode.elementType !== RakuElementTypes.INFIX)
         {
-            return Wrap.createWrap(WrapType.NORMAL, false);
+            val application = myNode.treeParent.psi as RakuInfixApplication
+            val parent: PsiElement? = PsiTreeUtil.getParentOfType<RakuPsiElement?>(
+                application, RakuSubCall::class.java, RakuMethodCall::class.java,
+                RakuArrayComposer::class.java, RakuVariableDecl::class.java
+            )
+            if (application.getOperator() == ","
+                && (parent is RakuSubCall || parent is RakuMethodCall)
+            ) {
+                return if (myCustomSettings.CALL_ARGUMENTS_WRAP)
+                    Wrap.createWrap(WrapType.NORMAL, false)
+                else
+                    null
+            }
+
+            if (application.getOperator() == ","
+                && (parent is RakuSubCall || parent is RakuMethodCall)
+                && parent is RakuArrayComposer || parent is RakuVariableDecl
+            ) {
+                return if (myCustomSettings.ARRAY_ELEMENTS_WRAP)
+                    Wrap.createWrap(WrapType.NORMAL, false)
+                else
+                    null
+            }
+
+            if (application.getOperator() != "." && myCustomSettings.INFIX_APPLICATION_WRAP)
+                return Wrap.createWrap(WrapType.NORMAL, false)
         }
 
-        if (myNode.getTreeParent() != null
-                && myNode.getTreeParent().getPsi() instanceof RakuInfixApplication application
-                && myNode.getElementType() != RakuTokenTypes.NULL_TERM
-                && myNode.getElementType() != RakuElementTypes.INFIX)
-        {
-            PsiElement parent = PsiTreeUtil.getParentOfType(application, RakuSubCall.class, RakuMethodCall.class,
-                                                            RakuArrayComposer.class, RakuVariableDecl.class);
-            if (application.getOperator().equals(",")
-                    && (parent instanceof RakuSubCall || parent instanceof RakuMethodCall))
-            {
-                return myCustomSettings.CALL_ARGUMENTS_WRAP
-                       ? Wrap.createWrap(WrapType.NORMAL, false)
-                       : null;
-            }
-
-            if (application.getOperator().equals(",")
-                    && (parent instanceof RakuSubCall || parent instanceof RakuMethodCall)
-                    && parent instanceof RakuArrayComposer || parent instanceof RakuVariableDecl)
-            {
-                return myCustomSettings.ARRAY_ELEMENTS_WRAP
-                       ? Wrap.createWrap(WrapType.NORMAL, false)
-                       : null;
-            }
-
-            if (!application.getOperator().equals(".") && myCustomSettings.INFIX_APPLICATION_WRAP) {
-                return Wrap.createWrap(WrapType.NORMAL, false);
-            }
-        }
-
-        return null;
+        return null
     }
 
-    @Nullable
-    private Pair<Function<ASTNode, Boolean>, Alignment> calculateAlignment(ASTNode node) {
-        IElementType type = node.getElementType();
-        if (type == SIGNATURE && myCustomSettings.PARAMETER_ALIGNMENT) {
-            return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
-        } else if (type == ARRAY_COMPOSER && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT) {
-            return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN
-                                       && child.getElementType() == ARRAY_COMPOSER_CLOSE,
-                               Alignment.createAlignment());
-        } else if (type == INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof RakuMethodCall)) {
-            if (!(node.getPsi() instanceof RakuInfixApplication infixApp)) return null;
+    private fun calculateAlignment(node: ASTNode): Pair<Function<ASTNode?, Boolean?>?, Alignment?>? {
+        val type = node.elementType
+        if (type === RakuElementTypes.SIGNATURE && myCustomSettings.PARAMETER_ALIGNMENT) {
+            return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
+                Function { child: ASTNode? -> child!!.elementType === RakuElementTypes.PARAMETER },
+                Alignment.createAlignment()
+            )
+        } else if (
+                    type === RakuElementTypes.ARRAY_COMPOSER
+                    && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT
+        ) {
+            return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
+                Function { child: ASTNode? ->
+                    child!!.elementType === RakuTokenTypes.ARRAY_COMPOSER_OPEN
+                            && child.elementType === RakuTokenTypes.ARRAY_COMPOSER_CLOSE
+                },
+                Alignment.createAlignment()
+            )
+        } else if (
+                    type === RakuOPPElementTypes.INFIX_APPLICATION
+                    && node.psi.lastChild !is RakuMethodCall
+        ) {
+            val infixApp = node.psi as? RakuInfixApplication ?: return null
 
             // TODO: Set up a rule for ternaries
-            if (infixApp.getOperator().equals("??")) return null; // Do not align ?? !!, we'll just indent it
+            if (infixApp.operator == "??") return null // Do not align ?? !!, we'll just indent it
 
-            if (infixApp.getOperator().equals(",")) {
+
+            if (infixApp.operator == ",") {
                 // Do not touch heredoc for real
-                if (ContainerUtil.exists(infixApp.getOperands(), s -> s instanceof RakuHeredoc)) {
-                    return null;
+                if (ContainerUtil.exists<PsiElement?>(
+                        infixApp.getOperands(),
+                        Condition { s: PsiElement? -> s is RakuHeredoc })
+                ) {
+                    return null
                 }
                 // If we have a comma separated list, there can be two cases: non-literal array init or signature
                 // check those cases, otherwise just do as infix guides us
-                PsiElement origin = PsiTreeUtil.getParentOfType(infixApp,
-                                                                RakuVariableDecl.class,
-                                                                RakuCodeBlockCall.class,
-                                                                RakuArrayComposer.class,
-                                                                RakuStatement.class);
+                val origin = PsiTreeUtil.getParentOfType<PsiElement?>(
+                    infixApp,
+                    RakuVariableDecl::class.java,
+                    RakuCodeBlockCall::class.java,
+                    RakuArrayComposer::class.java,
+                    RakuStatement::class.java
+                )
                 // This case is handled by another option
-                if (origin instanceof RakuArrayComposer) return null;
-                if (origin instanceof RakuCodeBlockCall) {
-                    return myCustomSettings.CALL_ARGUMENTS_ALIGNMENT
-                           ? Pair.create((child) -> child.getElementType() != RakuTokenTypes.INFIX
-                                                 && child.getElementType() != RakuTokenTypes.NULL_TERM,
-                                         Alignment.createAlignment())
-                           : null;
+                if (origin is RakuArrayComposer) return null
+                if (origin is RakuCodeBlockCall) {
+                    return if (myCustomSettings.CALL_ARGUMENTS_ALIGNMENT)
+                        Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
+                            Function { child: ASTNode? ->
+                                child!!.elementType !== RakuTokenTypes.INFIX
+                                        && child.elementType !== RakuTokenTypes.NULL_TERM
+                            },
+                            Alignment.createAlignment()
+                        )
+                    else
+                        null
                 } else {
-                    return myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT
-                           ? Pair.create((child) -> child.getElementType() != RakuTokenTypes.INFIX
-                                                 && child.getElementType() != RakuTokenTypes.NULL_TERM,
-                                         Alignment.createAlignment())
-                           : null;
+                    return if (myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT)
+                        Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
+                            Function { child: ASTNode? ->
+                                child!!.elementType !== RakuTokenTypes.INFIX
+                                        && child.elementType !== RakuTokenTypes.NULL_TERM
+                            },
+                            Alignment.createAlignment()
+                        )
+                    else
+                        null
                 }
             }
 
             if (myCustomSettings.INFIX_APPLICATION_ALIGNMENT) {
-                return Pair.create((child) -> child.getElementType() != RakuTokenTypes.INFIX
-                                           && child.getElementType() != RakuTokenTypes.NULL_TERM,
-                                   Alignment.createAlignment());
+                return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
+                    Function { child: ASTNode? ->
+                                child!!.elementType !== RakuTokenTypes.INFIX
+                                && child.elementType !== RakuTokenTypes.NULL_TERM
+                    },
+                    Alignment.createAlignment()
+                )
             }
         } else if (TRAIT_CARRIERS.contains(type) && myCustomSettings.TRAIT_ALIGNMENT) {
-            return Pair.create((child) -> child.getElementType() == RakuElementTypes.TRAIT, Alignment.createAlignment());
+            return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
+                Function { child: ASTNode? -> child!!.elementType === RakuElementTypes.TRAIT },
+                Alignment.createAlignment()
+            )
         }
 
-        if (type == BLOCKOID) {
-            return Pair.create((child) -> child.getElementType() == BLOCK_CURLY_BRACKET_OPEN
-                    && WHITESPACES.contains(child.getTreeNext().getElementType())
-                    && child.getTreeNext()
-                            .getTreeNext()
-                            .getElementType() == BLOCK_CURLY_BRACKET_OPEN, Alignment.createAlignment());
+        if (type === RakuElementTypes.BLOCKOID) {
+            return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(Function { child: ASTNode? ->
+                child!!.elementType === RakuTokenTypes.BLOCK_CURLY_BRACKET_OPEN && WHITESPACES.contains(
+                    child.treeNext.elementType
+                ) && child.treeNext.treeNext.elementType === RakuTokenTypes.BLOCK_CURLY_BRACKET_OPEN
+            }, Alignment.createAlignment())
         }
 
-        return null;
+        return null
     }
 
-    @Nullable
-    @Override
-    public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
-        if (!(child1 instanceof RakuBlock left) || !(child2 instanceof RakuBlock right)) {
-            return null;
-        }
+    override fun getSpacing(child1: Block?, child2: Block): Spacing? {
+        if (child1 !is RakuBlock || child2 !is RakuBlock)
+            return null
 
-        if (right.getNode().getElementType() == RakuElementTypes.REGEX_SIGSPACE) {
-            return null;
-        }
+        if (child2.node.elementType === RakuElementTypes.REGEX_SIGSPACE)
+            return null
 
-        int i = 0;
-        for (BiFunction<RakuBlock, RakuBlock, Spacing> rule : myRules) {
-            i++;
-            Spacing result = rule.apply(left, right);
+        var i = 0
+        for (ruleKey in RakuSpacingRule.entries) {
+            val rule = rules[ruleKey] ?: continue
+            i++
+            val result = rule.apply(child1, child2)
             if (result != null) {
                 if (DEBUG_MODE) {
-                    System.out.printf("Left: %s [%s]%n", left.getNode().getElementType(), left.getNode().getText());
-                    System.out.printf("Right: %s [%s]%n", right.getNode().getElementType(), right.getNode().getText());
-                    System.out.println("Applied rule: " + i);
+                    System.out.printf("Left: %s [%s]%n", child1.node.elementType, child1.node.text)
+                    System.out.printf("Right: %s [%s]%n", child2.node.elementType, child2.node.text)
+                    println("Applied rule: $ruleKey")
                 }
-                return result;
+                return result
             }
         }
         if (DEBUG_MODE) {
-            System.out.printf("Left: %s [%s]%n", left.getNode().getElementType(), left.getNode().getText());
-            System.out.printf("Right: %s [%s]%n", right.getNode().getElementType(), right.getNode().getText());
-            System.out.println("==> No rule was applied.");
+            System.out.printf("Left: %s [%s]%n", child1.node.elementType, child1.node.text)
+            System.out.printf("Right: %s [%s]%n", child2.node.elementType, child2.node.text)
+            println("==> No rule was applied.")
         }
-        return null;
+        return null
     }
 
-    @Override
-    public Indent getIndent() {
-        if (myNode.getTreeParent() == null) return null;
+    override fun getIndent(): Indent? {
+        if (myNode.treeParent == null) return null
 
-        if (myNode.getTreeParent().getPsi() instanceof RakuHeredoc) {
-            return Indent.getAbsoluteNoneIndent();
+        if (myNode.treeParent.psi is RakuHeredoc) {
+            return Indent.getAbsoluteNoneIndent()
         }
 
-        if (myNode.getTreeParent().getPsi() instanceof RakuBlockoid
-                && myNode.getTreeNext() != null && myNode.getTreePrev() != null)
-        {
-            return myNode.getTextLength() == 0
-                   ? Indent.getNoneIndent()
-                   : Indent.getNormalIndent();
+        if (myNode.treeParent.psi is RakuBlockoid
+            && myNode.treeNext != null && myNode.treePrev != null
+        ) {
+            return  if (myNode.textLength == 0)
+                        Indent.getNoneIndent()
+                    else
+                        Indent.getNormalIndent()
         }
 
-        if (myNode.getElementType() == SEMI_LIST
-                && (myNode.getTreeParent().getElementType() == ARRAY_COMPOSER
-                || myNode.getTreeParent().getElementType() == RakuElementTypes.CONTEXTUALIZER))
-        {
-            return myNode.getTextLength() == 0
-                   ? Indent.getNoneIndent()
-                   : Indent.getNormalIndent();
+        if (myNode.elementType === RakuElementTypes.SEMI_LIST
+            && (myNode.treeParent.elementType === RakuElementTypes.ARRAY_COMPOSER
+                    || myNode.treeParent.elementType === RakuElementTypes.CONTEXTUALIZER)
+        ) {
+            return if (myNode.textLength == 0)
+                Indent.getNoneIndent()
+            else
+                Indent.getNormalIndent()
         }
 
-        if (myNode.getElementType() == STATEMENT_TERMINATOR) {
-            return Indent.getContinuationIndent();
+        if (myNode.elementType === RakuTokenTypes.STATEMENT_TERMINATOR) {
+            return Indent.getContinuationIndent()
         }
 
         if (isStatementContinuation != null && isStatementContinuation) {
-            if (myNode.getElementType() == PARENTHESES_CLOSE
-                    && myNode.getTreeParent().getPsi() instanceof RakuSignature)
-            {
-                return Indent.getSpaceIndent(1, true);
-            } else if (myNode.getElementType() == PARENTHESES_CLOSE
-                    && myNode.getTreeParent().getPsi() instanceof RakuSubCall subCall)
-            {
-                if (subCall.getCallArguments().length != 0) {
-                    PsiElement infix = subCall.getCallArguments()[0].getParent();
-                    return Indent.getSpaceIndent(infix instanceof RakuInfixApplication
-                                                 ? infix.getStartOffsetInParent()
-                                                 : 0, true);
+            if (
+                myNode.elementType === RakuTokenTypes.PARENTHESES_CLOSE
+                && myNode.treeParent.psi is RakuSignature
+            ) {
+                return Indent.getSpaceIndent(1, true)
+            } else if (
+                myNode.elementType === RakuTokenTypes.PARENTHESES_CLOSE
+                && myNode.treeParent.psi is RakuSubCall
+            ) {
+                val subCall = myNode.treeParent.psi as RakuSubCall
+                if (subCall.getCallArguments().size != 0) {
+                    val infix: PsiElement? = subCall.getCallArguments()[0].getParent()
+                    return Indent.getSpaceIndent(
+                        if (infix is RakuInfixApplication)
+                            infix.startOffsetInParent
+                        else
+                            0, true
+                    )
                 }
-            } else if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE) {
-                return Indent.getNoneIndent();
+            } else if (myNode.elementType === RakuTokenTypes.ARRAY_COMPOSER_CLOSE) {
+                return Indent.getNoneIndent()
             }
-            return Indent.getContinuationIndent();
+            return Indent.getContinuationIndent()
         }
 
-        return Indent.getNoneIndent();
+        return Indent.getNoneIndent()
     }
 
-    private static boolean nodeInStatementContinuation(ASTNode startNode) {
-        PsiElement startPsi = startNode.getPsi();
-        PsiFile file = startPsi.getContainingFile();
-        if (file == null || !file.isPhysical()) return false;
-
-        Document doc = file.getViewProvider().getDocument();
-        if (doc == null) return false;
-
-        // Check if the node spans over multiple lines, making us want a continuation
-        if (doc.getLineNumber(startPsi.getTextOffset()) == doc.getLineNumber(startPsi.getParent().getTextOffset())) {
-            return false;
-        }
-
-        // Comments can be swept under other statement nodes, but they are in no way a continuation
-        if (startPsi instanceof PodPreComment || startPsi instanceof PodPostComment) {
-            return false;
-        }
-
-        // Traits have continuation indent
-        if (startPsi instanceof RakuTrait) return true;
-
-        // While infix is handled below, a special case of `my $foo = <continuation here> ...` is handled here
-        if (startPsi.getParent() instanceof RakuVariableDecl) {
-            if (RakuPsiUtil.skipSpaces(startPsi.getPrevSibling(), false) instanceof RakuInfix) {
-                return true;
-            }
-        }
-
-        // Now checking parents
-        if (startPsi.getParent() instanceof RakuInfixApplication) {
-            return !checkIfNonContinuatedInitializer(startPsi);
-        } else if (startPsi.getParent() instanceof RakuSubCall ||
-                startPsi.getParent() instanceof RakuSignature ||
-                startPsi.getParent() instanceof RakuMethodCall ||
-                startPsi.getParent() instanceof RakuArrayComposer)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean checkIfNonContinuatedInitializer(PsiElement startPsi) {
-        if (((RakuInfixApplication) startPsi.getParent()).getOperator().equals(",")) {
-            RakuContextualizer contextualizer = PsiTreeUtil.getParentOfType(startPsi, RakuContextualizer.class);
-            if (contextualizer != null && contextualizer.getText().startsWith("%")) {
-                return true;
-            }
-
-            PsiElement hopefullyStatement = startPsi.getParent().getParent();
-            if (hopefullyStatement instanceof RakuStatement) {
-                PsiElement statementHolder = hopefullyStatement.getParent();
-                if (statementHolder instanceof RakuStatementList) {
-                    // Might be in a hash initializer. Check if the first child of the infix
-                    // application is pair-like.
-                    PsiElement hopefullyPairish = startPsi.getParent().getChildren()[0];
-                    if (hopefullyPairish instanceof RakuFatArrow || hopefullyPairish instanceof RakuColonPair) {
-                        // It's fine, now just check we're in the appropriate kind of block.
-                        PsiElement hopefullyBlockoid = statementHolder.getParent();
-                        return hopefullyBlockoid instanceof RakuBlockoid && hopefullyBlockoid.getParent() instanceof RakuBlockOrHash;
-                    }
-                } else if (statementHolder instanceof RakuSemiList) {
-                    // Might be an array literal.
-                    if (statementHolder.getParent() instanceof RakuArrayComposer) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    @NotNull
-    @Override
-    public ChildAttributes getChildAttributes(int newIndex) {
-        IElementType elementType = myNode.getElementType();
-        if (elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER) {
-            return new ChildAttributes(Indent.getNormalIndent(), null);
-        } else if (elementType == BLOCKOID) {
-            List<Block> subblocks;
-            Block block = getSubBlocks().get(newIndex - 1);
+    override fun getChildAttributes(newIndex: Int): ChildAttributes {
+        val elementType = myNode.elementType
+        if (elementType === RakuElementTypes.REGEX_GROUP || elementType === RakuElementTypes.ARRAY_COMPOSER) {
+            return ChildAttributes(Indent.getNormalIndent(), null)
+        } else if (elementType === RakuElementTypes.BLOCKOID) {
+            var subblocks: MutableList<Block?>?
+            var block = getSubBlocks().get(newIndex - 1)
             while (block != null) {
-                subblocks = block.getSubBlocks();
-                if (subblocks.size() != 0) {
-                    block = subblocks.getLast();
+                subblocks = block.subBlocks
+                if (subblocks.size != 0) {
+                    block = subblocks.last()
                 } else {
-                    if (block instanceof RakuBlock
-                            && ((RakuBlock) block).getNode().getElementType() == UNTERMINATED_STATEMENT)
-                    {
-                        return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign((RakuBlock) block));
+                    if (
+                            block is RakuBlock
+                            && block.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT
+                    ) {
+                        return ChildAttributes(Indent.getContinuationIndent(), obtainAlign(block))
                     } else {
-                        return new ChildAttributes(Indent.getNormalIndent(), null);
+                        return ChildAttributes(Indent.getNormalIndent(), null)
                     }
                 }
             }
-            return new ChildAttributes(Indent.getNormalIndent(), null);
-        } else if (elementType == SIGNATURE || elementType == INFIX_APPLICATION) {
-            return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign(this));
-        } else if (elementType == METHOD_CALL) {
-            return new ChildAttributes(Indent.getContinuationIndent(), null);
-        } else if (myNode.getPsi() instanceof RakuPsiDeclaration) {
-            List<Block> blocks = getSubBlocks();
-            Block block = blocks.get(newIndex - 1);
-            if (block instanceof RakuBlock) {
-                if (((RakuBlock) block).getNode().getPsi() instanceof RakuTrait) {
-                    return new ChildAttributes(Indent.getContinuationIndent(), block.getAlignment());
+            return ChildAttributes(Indent.getNormalIndent(), null)
+        } else if (elementType === RakuElementTypes.SIGNATURE || elementType === RakuOPPElementTypes.INFIX_APPLICATION) {
+            return ChildAttributes(Indent.getContinuationIndent(), obtainAlign(this))
+        } else if (elementType === RakuElementTypes.METHOD_CALL) {
+            return ChildAttributes(Indent.getContinuationIndent(), null)
+        } else if (myNode.psi is RakuPsiDeclaration) {
+            val blocks = getSubBlocks()
+            val block = blocks.get(newIndex - 1)
+            if (block is RakuBlock) {
+                if (block.node.psi is RakuTrait) {
+                    return ChildAttributes(Indent.getContinuationIndent(), block.alignment)
                 }
             }
         }
-        return new ChildAttributes(Indent.getNoneIndent(), null);
+        return ChildAttributes(Indent.getNoneIndent(), null)
     }
 
-    private static Alignment obtainAlign(RakuBlock block) {
-        IElementType elementType = block.getNode().getElementType();
-        if (elementType == SIGNATURE) {
-            return block.children.stream()
-                                 .map(Block::getAlignment)
-                                 .filter(Objects::nonNull)
-                                 .findFirst()
-                                 .orElse(null);
-        } else if (elementType == INFIX_APPLICATION) {
-            RakuInfixApplication application = (RakuInfixApplication) block.getNode().getPsi();
-            if (application.getOperator().equals("=") &&
-                    application.getOperands().length == 2 &&
-                    application.getOperands()[1] instanceof RakuInfix)
-            {
-                return null;
-            } else {
-                return block.children.stream()
-                                     .map(Block::getAlignment)
-                                     .filter(Objects::nonNull)
-                                     .findFirst()
-                                     .orElse(null);
+    override fun isLeaf(): Boolean {
+        return myNode.firstChildNode == null
+    }
+
+    override fun getParent(): BlockWithParent? {
+        return myParent
+    }
+
+    override fun setParent(newParent: BlockWithParent?) {
+        myParent = newParent
+    }
+
+    companion object {
+        private const val DEBUG_MODE = true
+        private val TRAIT_CARRIERS = TokenSet.create(
+            RakuElementTypes.PACKAGE_DECLARATION,
+            RakuElementTypes.ROUTINE_DECLARATION,
+            RakuElementTypes.VARIABLE_DECLARATION,
+            RakuElementTypes.PARAMETER,
+            RakuElementTypes.REGEX_DECLARATION,
+            RakuElementTypes.ENUM,
+            RakuElementTypes.SUBSET,
+            RakuElementTypes.CONSTANT
+        )
+
+        private fun nodeInStatementContinuation(startNode: ASTNode): Boolean {
+            val startPsi = startNode.psi
+            val file = startPsi.containingFile
+            if (file == null || !file.isPhysical) return false
+
+            val doc = file.viewProvider.document
+            if (doc == null) return false
+
+            // Check if the node spans over multiple lines, making us want a continuation
+            if (doc.getLineNumber(startPsi.textOffset) == doc.getLineNumber(
+                    startPsi.parent
+                        .textOffset
+                )
+            ) {
+                return false
             }
-        } else if (elementType == UNTERMINATED_STATEMENT) {
-            RakuBlock base = (RakuBlock) block.getParent();
-            List<Block> blocks = base.getSubBlocks();
-            for (int i = 0; i < blocks.size(); i++) {
-                Block temp = blocks.get(i);
-                if (temp == block) {
-                    return obtainAlign((RakuBlock) blocks.get(i - 1));
+
+            // Comments can be swept under other statement nodes, but they are in no way a continuation
+            if (startPsi is PodPreComment || startPsi is PodPostComment) {
+                return false
+            }
+
+            // Traits have continuation indent
+            if (startPsi is RakuTrait) return true
+
+            // While infix is handled below, a special case of `my $foo = <continuation here> ...` is handled here
+            if (startPsi.parent is RakuVariableDecl) {
+                if (RakuPsiUtil.skipSpaces(startPsi.prevSibling, false) is RakuInfix) {
+                    return true
                 }
             }
+
+            // Now checking parents
+            if (startPsi.parent is RakuInfixApplication) {
+                return !checkIfNonContinuatedInitializer(startPsi)
+            } else if (startPsi.parent is RakuSubCall ||
+                startPsi.parent is RakuSignature ||
+                startPsi.parent is RakuMethodCall ||
+                startPsi.parent is RakuArrayComposer
+            ) {
+                return true
+            }
+            return false
         }
-        return null;
-    }
 
-    @Override
-    public boolean isLeaf() {
-        return myNode.getFirstChildNode() == null;
-    }
+        private fun checkIfNonContinuatedInitializer(startPsi: PsiElement): Boolean {
+            if ((startPsi.parent as RakuInfixApplication).getOperator() == ",") {
+                val contextualizer =
+                    PsiTreeUtil.getParentOfType<RakuContextualizer?>(startPsi, RakuContextualizer::class.java)
+                if (contextualizer != null && contextualizer.text.startsWith("%")) {
+                    return true
+                }
 
-    @Override
-    public BlockWithParent getParent() {
-        return myParent;
-    }
+                val hopefullyStatement = startPsi.parent.parent
+                if (hopefullyStatement is RakuStatement) {
+                    val statementHolder = hopefullyStatement.parent
+                    if (statementHolder is RakuStatementList) {
+                        // Might be in a hash initializer. Check if the first child of the infix
+                        // application is pair-like.
+                        val hopefullyPairish = startPsi.parent.children[0]
+                        if (hopefullyPairish is RakuFatArrow || hopefullyPairish is RakuColonPair) {
+                            // It's fine, now just check we're in the appropriate kind of block.
+                            val hopefullyBlockoid = statementHolder.parent
+                            return hopefullyBlockoid is RakuBlockoid && hopefullyBlockoid.parent is RakuBlockOrHash
+                        }
+                    } else if (statementHolder is RakuSemiList) {
+                        // Might be an array literal.
+                        if (statementHolder.parent is RakuArrayComposer) {
+                            return false
+                        }
+                    }
+                }
+            }
+            return false
+        }
 
-    @Override
-    public void setParent(BlockWithParent newParent) {
-        myParent = newParent;
+        private fun obtainAlign(block: RakuBlock): Alignment? {
+
+            val elementType = block.node.elementType
+            if (elementType === RakuElementTypes.SIGNATURE) {
+                return block.children!!.stream()
+                    .map<Alignment?> { obj: Block? -> obj!!.alignment }
+                    .filter { obj: Alignment? -> Objects.nonNull(obj) }
+                    .findFirst()
+                    .orElse(null)
+            } else if (elementType === RakuOPPElementTypes.INFIX_APPLICATION) {
+                val application = block.node.psi as RakuInfixApplication
+                if (application.getOperator() == "=" && application.getOperands().size == 2 &&
+                    application.getOperands()[1] is RakuInfix
+                ) {
+                    return null
+                } else {
+                    return block.children!!.stream()
+                        .map<Alignment?> { obj: Block? -> obj!!.alignment }
+                        .filter { obj: Alignment? -> Objects.nonNull(obj) }
+                        .findFirst()
+                        .orElse(null)
+                }
+            } else if (elementType === RakuElementTypes.UNTERMINATED_STATEMENT) {
+                val base = block.parent as RakuBlock
+                val blocks = base.getSubBlocks()
+                for (i in blocks.indices) {
+                    val temp = blocks.get(i)
+                    if (temp === block) {
+                        return obtainAlign((blocks.get(i - 1) as RakuBlock?)!!)
+                    }
+                }
+            }
+            return null
+        }
     }
 }
