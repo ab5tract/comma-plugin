@@ -23,9 +23,9 @@ import java.util.function.Function
 
 internal class RakuBlock : AbstractBlock, BlockWithParent {
     private val rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
-    private val myCommonSettings: CommonCodeStyleSettings?
-    private val myCustomSettings: RakuCodeStyleSettings
-    private var myParent: BlockWithParent? = null
+    private val commonSettings: CommonCodeStyleSettings?
+    private val settings: RakuCodeStyleSettings
+    private var parent: BlockWithParent? = null
     private val isStatementContinuation: Boolean?
 
     private val WHITESPACES = TokenSet.create(
@@ -45,8 +45,8 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
     ) : super(node, wrap, align) {
         this@RakuBlock.rules = rules
-        myCommonSettings = commonSettings
-        myCustomSettings = customSettings
+        this@RakuBlock.commonSettings = commonSettings
+        settings = customSettings
         this.isStatementContinuation = false
     }
 
@@ -60,8 +60,8 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
     ) : super(node, wrap, align) {
         this@RakuBlock.rules = rules
-        myCommonSettings = commonSettings
-        myCustomSettings = customSettings
+        this@RakuBlock.commonSettings = commonSettings
+        this.settings = customSettings
         this.isStatementContinuation = isStatementContinuation
     }
 
@@ -97,8 +97,8 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                                    null,
                                    align,
                                    childIsStatementContinuation,
-                                   myCommonSettings,
-                                   myCustomSettings,
+                                   commonSettings,
+                                   settings,
                                    rules)
             childBlock.parent = this
             children.add(childBlock)
@@ -117,15 +117,15 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             ) !is RakuFile
         ) return null
 
-        if (myNode.elementType === RakuElementTypes.PARAMETER && myCustomSettings.PARAMETER_WRAP)
+        if (myNode.elementType === RakuElementTypes.PARAMETER && settings.PARAMETER_WRAP)
             return Wrap.createWrap(WrapType.NORMAL, true)
 
-        if (myNode.elementType === RakuElementTypes.TRAIT && myCustomSettings.TRAIT_WRAP)
+        if (myNode.elementType === RakuElementTypes.TRAIT && settings.TRAIT_WRAP)
             return Wrap.createWrap(WrapType.NORMAL, true)
 
         if (myNode.psi is RakuMethodCall
         && myNode.text.startsWith(".")
-        && myCustomSettings.METHOD_CALL_WRAP)
+        && settings.METHOD_CALL_WRAP)
             return Wrap.createWrap(WrapType.NORMAL, false)
 
         if (myNode.treeParent != null
@@ -141,7 +141,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             if (application.getOperator() == ","
                 && (parent is RakuSubCall || parent is RakuMethodCall)
             ) {
-                return if (myCustomSettings.CALL_ARGUMENTS_WRAP)
+                return if (settings.CALL_ARGUMENTS_WRAP)
                     Wrap.createWrap(WrapType.NORMAL, false)
                 else
                     null
@@ -151,13 +151,13 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                 && (parent is RakuSubCall || parent is RakuMethodCall)
                 && parent is RakuArrayComposer || parent is RakuVariableDecl
             ) {
-                return if (myCustomSettings.ARRAY_ELEMENTS_WRAP)
+                return if (settings.ARRAY_ELEMENTS_WRAP)
                     Wrap.createWrap(WrapType.NORMAL, false)
                 else
                     null
             }
 
-            if (application.getOperator() != "." && myCustomSettings.INFIX_APPLICATION_WRAP)
+            if (application.getOperator() != "." && settings.INFIX_APPLICATION_WRAP)
                 return Wrap.createWrap(WrapType.NORMAL, false)
         }
 
@@ -166,14 +166,14 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
 
     private fun calculateAlignment(node: ASTNode): Pair<Function<ASTNode?, Boolean?>?, Alignment?>? {
         val type = node.elementType
-        if (type === RakuElementTypes.SIGNATURE && myCustomSettings.PARAMETER_ALIGNMENT) {
+        if (type === RakuElementTypes.SIGNATURE && settings.PARAMETER_ALIGNMENT) {
             return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                 Function { child: ASTNode? -> child!!.elementType === RakuElementTypes.PARAMETER },
                 Alignment.createAlignment()
             )
         } else if (
                     type === RakuElementTypes.ARRAY_COMPOSER
-                    && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT
+                    && settings.ARRAY_ELEMENTS_ALIGNMENT
         ) {
             return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                 Function { child: ASTNode? ->
@@ -212,7 +212,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                 // This case is handled by another option
                 if (origin is RakuArrayComposer) return null
                 if (origin is RakuCodeBlockCall) {
-                    return if (myCustomSettings.CALL_ARGUMENTS_ALIGNMENT)
+                    return if (settings.CALL_ARGUMENTS_ALIGNMENT)
                         Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                             Function { child: ASTNode? ->
                                 child!!.elementType !== RakuTokenTypes.INFIX
@@ -223,7 +223,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                     else
                         null
                 } else {
-                    return if (myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT)
+                    return if (settings.ARRAY_ELEMENTS_ALIGNMENT)
                         Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                             Function { child: ASTNode? ->
                                 child!!.elementType !== RakuTokenTypes.INFIX
@@ -236,7 +236,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                 }
             }
 
-            if (myCustomSettings.INFIX_APPLICATION_ALIGNMENT) {
+            if (settings.INFIX_APPLICATION_ALIGNMENT) {
                 return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                     Function { child: ASTNode? ->
                                 child!!.elementType !== RakuTokenTypes.INFIX
@@ -245,7 +245,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                     Alignment.createAlignment()
                 )
             }
-        } else if (TRAIT_CARRIERS.contains(type) && myCustomSettings.TRAIT_ALIGNMENT) {
+        } else if (TRAIT_CARRIERS.contains(type) && settings.TRAIT_ALIGNMENT) {
             return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                 Function { child: ASTNode? -> child!!.elementType === RakuElementTypes.TRAIT },
                 Alignment.createAlignment()
@@ -395,11 +395,11 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
     }
 
     override fun getParent(): BlockWithParent? {
-        return myParent
+        return parent
     }
 
     override fun setParent(newParent: BlockWithParent?) {
-        myParent = newParent
+        parent = newParent
     }
 
     companion object {
