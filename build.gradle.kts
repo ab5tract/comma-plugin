@@ -27,13 +27,13 @@ fun determineCurrentGitBranch(): String {
                      commandLine("git", "branch", "--show-current")
             }.standardOutput.asText.get().trim().lines().last()
 }
-val currentGitBranch = determineCurrentGitBranch()
 
 fun gitCurrentRakuBetaPluginVersion(): String {
     return providers.exec {
                  commandLine("git", "tag", "--merged", "main", "--sort=taggerdate")
              }.standardOutput.asText.get().trim().lines().last()
 }
+
 fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String {
     val betaVersionPath = Path(".versions/raku-beta-version${ formatBranch(currentGitBranch, ".%s") }")
 
@@ -45,9 +45,6 @@ fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String 
         }
     }
 }
-val currentRakuPluginVersion = gitCurrentRakuBetaPluginVersion()
-println("Current version: $currentRakuPluginVersion")
-
 
 abstract class IdeaVersionTask : DefaultTask() {
     @Input
@@ -89,7 +86,7 @@ abstract class FetchGitTagRakuPluginBetaVersion : IdeaVersionTask() {
                 =   RakuPluginBetaVersion(
                         idea   = ideaVersion,
                         beta   = version,
-                        branch = "main")
+                        branch = gitBranch.get())
 
     @TaskAction
     override fun action() {
@@ -154,23 +151,23 @@ tasks.register<FetchGitTagRakuPluginBetaVersion>("findVersionFromGitTag") {
     description = "Determine plugin beta version based on git tags"
 
     gitTag = gitCurrentRakuBetaPluginVersion()
-    gitBranch = currentGitBranch
+    gitBranch = "main"
 }
 
 tasks.register<GetRakuPluginBetaVersion>("retrieveBetaVersion") {
     group = "version"
     description = "Retrieve plugin beta version"
 
-    gitTag = safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch = currentGitBranch)
-    gitBranch = currentGitBranch
+    gitTag = safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch = determineCurrentGitBranch())
+    gitBranch = determineCurrentGitBranch()
 }
 
 tasks.register<BumpRakuPluginBetaVersion>("bumpBetaVersion") {
     group = "version"
     description = "Bump plugin beta version"
 
-    gitTag = safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch = currentGitBranch)
-    gitBranch = currentGitBranch
+    gitTag = safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch = determineCurrentGitBranch())
+    gitBranch = determineCurrentGitBranch()
 }
 
 plugins {
@@ -184,7 +181,7 @@ plugins {
 }
 
 group   = properties("pluginGroup")
-version = currentRakuPluginVersion
+version = safeDetermineCurrentRakuBetaPluginVersion(determineCurrentGitBranch())
 // Configure project's dependencies
 repositories {
     mavenCentral()
@@ -204,7 +201,7 @@ intellijPlatform {
     pluginConfiguration {
         id = "org.raku.comma"
         name = "Raku"
-        version = currentRakuPluginVersion
+        version = safeDetermineCurrentRakuBetaPluginVersion(determineCurrentGitBranch())
 
         ideaVersion {
             sinceBuild = "242"
