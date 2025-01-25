@@ -1,3 +1,9 @@
+
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import kotlin.io.path.Path
@@ -8,19 +14,40 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 // TODO: Don't include all of this mess in one file
 //////// VERSION STUFF
+
+fun formatBranch(
+    gitBranch: String,
+    format: String = "%s"
+) = if (gitBranch != "main") format.format(gitBranch) else ""
+
 val ideaBuildVersion = File(".versions/idea-version").readText(Charsets.UTF_8)
 
-fun determineCurrentRakuBetaPlugin(): String {
-    val betaVersionPath = Path(".versions/raku-beta-version")
+fun determineCurrentGitBranch(): String {
+    return  providers.exec {
+                     commandLine("git", "branch", "--show-current")
+            }.standardOutput.asText.get().trim().lines().last()
+}
+val currentGitBranch = determineCurrentGitBranch()
+
+fun gitCurrentRakuBetaPluginVersion(): String {
+    return providers.exec {
+                 commandLine("git", "tag", "--merged", "main", "--sort=taggerdate")
+             }.standardOutput.asText.get().trim().lines().last()
+}
+fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String {
+    val betaVersionPath = Path(".versions/raku-beta-version${ formatBranch(currentGitBranch, ".%s") }")
 
     return when(betaVersionPath.exists()) {
         true  -> betaVersionPath.toFile().readText().trim()
-        false -> providers.exec {
-                     commandLine("git", "tag", "--merged", "main", "--sort=taggerdate")
-                 }.standardOutput.asText.get().trim().lines().last()
+        false -> {
+            val idea = File(".versions/idea-version").readText(Charsets.UTF_8)
+            "$idea-beta${formatBranch(currentGitBranch, "(%s)") }.1"
+        }
     }
 }
-val currentRakuPluginVersion = determineCurrentRakuBetaPlugin()
+val currentRakuPluginVersion = gitCurrentRakuBetaPluginVersion()
+println("Current version: $currentRakuPluginVersion")
+
 
 abstract class IdeaVersionTask : DefaultTask() {
     @Input
@@ -38,45 +65,80 @@ abstract class IdeaVersionTask : DefaultTask() {
     }
 }
 
-abstract class GetRakuPluginBetaVersion : IdeaVersionTask() {
-    data class RakuPluginBetaVersion(val idea: String, val beta: Int) {
-        override fun toString(): String { return "$idea-beta.$beta" }
-    }
+data class RakuPluginBetaVersion(val idea: String, val beta: Int, val branch: String) {
+    fun fileName(): String = ".versions/raku-beta-version${ maybeBranch(".%s") }"
+    fun maybeBranch(format: String = "%s") = if (branch != "main") format.format(branch) else ""
+
+    override fun toString(): String = "$idea-beta${ maybeBranch("(%s)") }.$beta"
+}
+
+// TODO: Make this support branches other that 'main'
+abstract class FetchGitTagRakuPluginBetaVersion : IdeaVersionTask() {
+    @get:Input
+    val gitBranch: Property<String> = project.objects.property<String>()
 
     @get:Input
-    abstract var gitTag: String
+    val gitTag: Property<String> = project.objects.property<String>()
 
-    @Input
-    val betaVersionFileName = ".versions/raku-beta-version"
+    @Internal
+    val version = gitTag.map { it.last().digitToInt() }
+    @Internal
+    val pluginBetaVersion: Provider<RakuPluginBetaVersion> = version.map { determinePluginVersion(it) }
 
-    @OutputFile
-    val betaVersionFile = File(betaVersionFileName)
-
-    fun determinePluginVersion(): RakuPluginBetaVersion {
-        val lastBetaVersion = gitTag.split(".").last().toInt()
-        val lastIdeaBuildVersion = gitTag.split("-").first()
-        return RakuPluginBetaVersion(lastIdeaBuildVersion, lastBetaVersion)
-    }
+    fun determinePluginVersion(version: Int): RakuPluginBetaVersion
+                =   RakuPluginBetaVersion(
+                        idea   = ideaVersion,
+                        beta   = version,
+                        branch = "main")
 
     @TaskAction
     override fun action() {
-        betaVersionFile.parentFile.mkdirs()
-        betaVersionFile.writeText(determinePluginVersion().toString())
-        println(determinePluginVersion().toString())
+        println(pluginBetaVersion.get().toString())
+    }
+}
+
+abstract class GetRakuPluginBetaVersion : IdeaVersionTask() {
+    @get:Input
+    val gitBranch: Property<String> = project.objects.property<String>()
+
+    @get:Input
+    val gitTag: Property<String> = project.objects.property<String>()
+
+    @Internal
+    val version = gitTag.map { it.last().digitToInt() }
+    @Internal
+    val pluginBetaVersion: Provider<RakuPluginBetaVersion> = version.map { determinePluginVersion(it) }
+
+    @get:OutputFile
+    val betaVersionFile: Provider<File> = pluginBetaVersion.map { File(it.fileName()) }
+
+    fun determinePluginVersion(version: Int): RakuPluginBetaVersion
+                =   RakuPluginBetaVersion(
+                        idea   = ideaVersion,
+                        beta   = version,
+                        branch = gitBranch.get())
+
+    @TaskAction
+    override fun action() {
+        betaVersionFile.get().parentFile.mkdirs()
+        betaVersionFile.get().writeText(pluginBetaVersion.get().toString())
+        println(pluginBetaVersion.get().toString())
     }
 }
 
 abstract class BumpRakuPluginBetaVersion: GetRakuPluginBetaVersion() {
     @TaskAction
     override fun action() {
-        val oldPluginVersion = determinePluginVersion()
+        val oldPluginVersion = pluginBetaVersion.get()
 
         val newPluginVersion = when (ideaVersion == oldPluginVersion.idea) {
-            true  -> RakuPluginBetaVersion(oldPluginVersion.idea, oldPluginVersion.beta + 1)
-            false -> RakuPluginBetaVersion(ideaVersion, 1)
+            true  -> RakuPluginBetaVersion(oldPluginVersion.idea,
+                                           oldPluginVersion.beta + 1,
+                                           gitBranch.get())
+            false -> RakuPluginBetaVersion(ideaVersion, 1, gitBranch.get())
         }
 
-        betaVersionFile.writeText(newPluginVersion.toString())
+        betaVersionFile.get().writeText(newPluginVersion.toString())
         println(newPluginVersion)
     }
 }
@@ -87,16 +149,28 @@ tasks.register<IdeaVersionTask>("retrieveIdeaVersion") {
     description = "Retrieve IntelliJ IDEA version"
 }
 
+tasks.register<FetchGitTagRakuPluginBetaVersion>("findVersionFromGitTag") {
+    group = "version"
+    description = "Determine plugin beta version based on git tags"
+
+    gitTag = gitCurrentRakuBetaPluginVersion()
+    gitBranch = currentGitBranch
+}
+
 tasks.register<GetRakuPluginBetaVersion>("retrieveBetaVersion") {
     group = "version"
     description = "Retrieve plugin beta version"
-    gitTag = currentRakuPluginVersion
+
+    gitTag = safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch = currentGitBranch)
+    gitBranch = currentGitBranch
 }
 
 tasks.register<BumpRakuPluginBetaVersion>("bumpBetaVersion") {
     group = "version"
     description = "Bump plugin beta version"
-    gitTag = currentRakuPluginVersion
+
+    gitTag = safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch = currentGitBranch)
+    gitBranch = currentGitBranch
 }
 
 plugins {
