@@ -21,6 +21,27 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
     var SINGLE_LINE_BREAK: Spacing? = null
     var DOUBLE_LINE_BREAK: Spacing? = null
 
+    private val STATEMENTS = TokenSet.create(
+        RakuElementTypes.STATEMENT,
+        RakuElementTypes.COMMENT,
+        RakuElementTypes.HEREDOC
+    )
+    private val OPENERS = TokenSet.create(
+        RakuTokenTypes.ARRAY_COMPOSER_OPEN,
+        RakuTokenTypes.ARRAY_INDEX_BRACKET_OPEN,
+        RakuTokenTypes.HASH_INDEX_BRACKET_OPEN,
+        RakuTokenTypes.SIGNATURE_BRACKET_OPEN
+    )
+    private val CLOSERS = TokenSet.create(
+        RakuTokenTypes.ARRAY_COMPOSER_CLOSE,
+        RakuTokenTypes.ARRAY_INDEX_BRACKET_CLOSE,
+        RakuTokenTypes.HASH_INDEX_BRACKET_CLOSE,
+        RakuTokenTypes.SIGNATURE_BRACKET_CLOSE
+    )
+
+    private fun isDanglingComma(node: ASTNode?): Boolean =
+        node != null && node.elementType === RakuElementTypes.NULL_TERM
+
     override fun createModel(formattingContext: FormattingContext): FormattingModel {
         val psiFile = formattingContext.containingFile
         val rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>> = mutableMapOf()
@@ -388,10 +409,8 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
             // Do not play with {} in regexes
             if (left.node.elementType === RakuTokenTypes.REGEX_LOOKAROUND) return@func null
 
-            if (
-                left.node.elementType === RakuTokenTypes.ONLY_STAR
-            || right.node.elementType === RakuTokenTypes.ONLY_STAR
-            ) return@func Spacing.createSpacing(0, 0, 0, false, 0)
+            if (left.node.elementType === RakuTokenTypes.ONLY_STAR
+            || right.node.elementType === RakuTokenTypes.ONLY_STAR) return@func Spacing.createSpacing(0, 0, 0, false, 0)
 
             val blockoid = left.node.treeParent
             if (blockoid.elementType === RakuElementTypes.BLOCKOID) {
@@ -414,12 +433,12 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
                     ||  source is RakuRoutineDecl && customSettings.ROUTINES_DECLARATION_IN_ONE_LINE
                     ||  source is RakuRegexDecl   && customSettings.REGEX_DECLARATION_IN_ONE_LINE
                     ||  source is RakuPointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE
-                    || (source is RakuStatement || source is RakuBlockOrHash || source is RakuBlock)
+                    || (source is RakuStatement || source is RakuBlockOrHash || source is org.raku.comma.psi.RakuBlock)
                     && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE)
                         return@func Spacing.createSpacing(0, 0, 0, true, 1)
 
                 } else if (statementCount == 1) {
-                    if (source is RakuStatement || source is RakuBlockOrHash || source is RakuBlock)
+                    if (source is RakuStatement || source is RakuBlockOrHash || source is org.raku.comma.psi.RakuBlock)
                         if (commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE
                         || source is RakuPointyBlock
                         && customSettings.POINTY_BLOCK_IN_ONE_LINE)
@@ -438,8 +457,6 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
                         ) != null
                     ) return@func Spacing.createSpacing(0, 0, 0, false, 0)
                 }
-                if (statementCount < 2)
-                    return@func Spacing.createSpacing(0, 0, 1, false, 0)
             }
             var lineFeeds = 1
             val lhsElementIsRegex = left.node.elementType === RakuElementTypes.REGEX
@@ -462,28 +479,5 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
             || right!!.node.treeParent.elementType === RakuElementTypes.SEMI_LIST))
                     SINGLE_LINE_BREAK else null
         }
-    }
-
-    companion object {
-        private val STATEMENTS = TokenSet.create(
-            RakuElementTypes.STATEMENT,
-            RakuElementTypes.COMMENT,
-            RakuElementTypes.HEREDOC
-        )
-        private val OPENERS = TokenSet.create(
-            RakuTokenTypes.ARRAY_COMPOSER_OPEN,
-            RakuTokenTypes.ARRAY_INDEX_BRACKET_OPEN,
-            RakuTokenTypes.HASH_INDEX_BRACKET_OPEN,
-            RakuTokenTypes.SIGNATURE_BRACKET_OPEN
-        )
-        private val CLOSERS = TokenSet.create(
-            RakuTokenTypes.ARRAY_COMPOSER_CLOSE,
-            RakuTokenTypes.ARRAY_INDEX_BRACKET_CLOSE,
-            RakuTokenTypes.HASH_INDEX_BRACKET_CLOSE,
-            RakuTokenTypes.SIGNATURE_BRACKET_CLOSE
-        )
-
-        private fun isDanglingComma(node: ASTNode?): Boolean =
-            node != null && node.elementType === RakuElementTypes.NULL_TERM
     }
 }

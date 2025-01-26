@@ -171,10 +171,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                 Function { child: ASTNode? -> child!!.elementType === RakuElementTypes.PARAMETER },
                 Alignment.createAlignment()
             )
-        } else if (
-                    type === RakuElementTypes.ARRAY_COMPOSER
-                    && settings.ARRAY_ELEMENTS_ALIGNMENT
-        ) {
+        } else if (type === RakuElementTypes.ARRAY_COMPOSER && settings.ARRAY_ELEMENTS_ALIGNMENT) {
             return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
                 Function { child: ASTNode? ->
                     child!!.elementType === RakuTokenTypes.ARRAY_COMPOSER_OPEN
@@ -182,15 +179,11 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                 },
                 Alignment.createAlignment()
             )
-        } else if (
-                    type === RakuOPPElementTypes.INFIX_APPLICATION
-                    && node.psi.lastChild !is RakuMethodCall
-        ) {
+        } else if (type === RakuOPPElementTypes.INFIX_APPLICATION && node.psi.lastChild !is RakuMethodCall) {
             val infixApp = node.psi as? RakuInfixApplication ?: return null
 
             // TODO: Set up a rule for ternaries
             if (infixApp.operator == "??") return null // Do not align ?? !!, we'll just indent it
-
 
             if (infixApp.operator == ",") {
                 // Do not touch heredoc for real
@@ -263,6 +256,11 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         return null
     }
 
+    fun trimText(text: String): String {
+        val lines = text.lines()
+        return if (lines.size > 11) lines.subList(0, 11).joinToString("\n") + "\n..........." else text
+    }
+
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
         if (child1 !is RakuBlock || child2 !is RakuBlock)
             return null
@@ -270,24 +268,28 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         if (child2.node.elementType === RakuElementTypes.REGEX_SIGSPACE)
             return null
 
-        var i = 0
+        // Prevent huge re-writing of entire files
+        // TODO: Address this at a lower level
+        if (child1.node.text.lines().size > 11 || child2.node.text.lines().size > 11)
+            return null
+
         for (ruleKey in RakuSpacingRule.entries) {
             val rule = rules[ruleKey] ?: continue
-            i++
             val result = rule.apply(child1, child2)
             if (result != null) {
                 if (DEBUG_MODE) {
-                    System.out.printf("Left: %s [%s]%n", child1.node.elementType, child1.node.text)
-                    System.out.printf("Right: %s [%s]%n", child2.node.elementType, child2.node.text)
-                    println("Applied rule: $ruleKey")
+                    System.out.printf("Left: %s [%s]%n", child1.node.elementType, trimText(child1.node.text))
+                    System.out.printf("Right: %s [%s]%n", child2.node.elementType, trimText(child2.node.text))
+                    println("Applied rule: $ruleKey\n")
                 }
                 return result
             }
         }
+
         if (DEBUG_MODE) {
-            System.out.printf("Left: %s [%s]%n", child1.node.elementType, child1.node.text)
-            System.out.printf("Right: %s [%s]%n", child2.node.elementType, child2.node.text)
-            println("==> No rule was applied.")
+            System.out.printf("Left: %s [%s]%n", child1.node.elementType, trimText(child1.node.text))
+            System.out.printf("Right: %s [%s]%n", child2.node.elementType, trimText(child2.node.text))
+            println("==> No rule was applied.\n")
         }
         return null
     }
@@ -302,10 +304,8 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         if (myNode.treeParent.psi is RakuBlockoid
             && myNode.treeNext != null && myNode.treePrev != null
         ) {
-            return  if (myNode.textLength == 0)
-                        Indent.getNoneIndent()
-                    else
-                        Indent.getNormalIndent()
+            return if (myNode.textLength == 0)
+                        Indent.getNoneIndent() else Indent.getNormalIndent()
         }
 
         if (myNode.elementType === RakuElementTypes.SEMI_LIST
@@ -313,9 +313,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                     || myNode.treeParent.elementType === RakuElementTypes.CONTEXTUALIZER)
         ) {
             return if (myNode.textLength == 0)
-                Indent.getNoneIndent()
-            else
-                Indent.getNormalIndent()
+                        Indent.getNoneIndent() else Indent.getNormalIndent()
         }
 
         if (myNode.elementType === RakuTokenTypes.STATEMENT_TERMINATOR) {
@@ -360,17 +358,12 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             var block = getSubBlocks().get(newIndex - 1)
             while (block != null) {
                 subblocks = block.subBlocks
-                if (subblocks.size != 0) {
+                if (subblocks.isNotEmpty()) {
                     block = subblocks.last()
+                } else if (block is RakuBlock && block.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT) {
+                    return ChildAttributes(Indent.getContinuationIndent(), obtainAlign(block))
                 } else {
-                    if (
-                            block is RakuBlock
-                            && block.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT
-                    ) {
-                        return ChildAttributes(Indent.getContinuationIndent(), obtainAlign(block))
-                    } else {
-                        return ChildAttributes(Indent.getNormalIndent(), null)
-                    }
+                    return ChildAttributes(Indent.getNormalIndent(), null)
                 }
             }
             return ChildAttributes(Indent.getNormalIndent(), null)

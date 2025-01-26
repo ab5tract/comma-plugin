@@ -17,10 +17,10 @@
 <!--      <add-to-group group-id="NavBarToolBar" anchor="last"/>-->
 <!--    </action>-->
 
-    <group id="OpenProjectGroup">
-      <group id="NewElementInMenuGroup" class="org.raku.comma.actions.NewActionGroup" text="New" popup="true"/>
-      <add-to-group group-id="FileOpenGroup" anchor="first"/>
-    </group>
+<!--    <group id="OpenProjectGroup">-->
+<!--      <group id="NewElementInMenuGroup" class="org.raku.comma.actions.NewActionGroup" text="New" popup="true"/>-->
+<!--      <add-to-group group-id="FileOpenGroup" anchor="first"/>-->
+<!--    </group>-->
 
     <action id="NewElement" class="com.intellij.ide.actions.NewElementAction"/>
     <group id="MoveModuleToGroup" class="com.intellij.ide.projectView.impl.MoveModuleToGroupTopLevel" popup="true"/>

@@ -8,12 +8,13 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.impl.source.codeStyle.CodeFormatterFacade;
 import com.intellij.psi.impl.source.codeStyle.PostFormatProcessor;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.RakuLanguage;
 
 public class RakuFormatPostprocessor implements PostFormatProcessor {
     @NotNull
     @Override
     public PsiElement processElement(@NotNull PsiElement source, @NotNull CodeStyleSettings settings) {
-        CodeFormatterFacade facade = new CodeFormatterFacade(settings, source.getLanguage(), false);
+        CodeFormatterFacade facade = new CodeFormatterFacade(settings, RakuLanguage.INSTANCE, false);
         ASTNode node = facade.processElement(source.getNode());
         return facade.processElement(node).getPsi();
     }
