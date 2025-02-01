@@ -3,13 +3,19 @@ package org.raku.comma.formatter
 import com.intellij.formatting.*
 import com.intellij.formatting.templateLanguages.BlockWithParent
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Pair
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import com.intellij.util.containers.ContainerUtil
 import org.raku.comma.formatter.RakuFormattingModelBuilder.RakuSpacingRule
 import org.raku.comma.parsing.RakuElementTypes
@@ -17,7 +23,6 @@ import org.raku.comma.parsing.RakuOPPElementTypes
 import org.raku.comma.parsing.RakuTokenTypes
 import org.raku.comma.psi.*
 import org.raku.comma.utils.RakuPsiUtil
-import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
 
@@ -28,13 +33,16 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
     private var parent: BlockWithParent? = null
     private val isStatementContinuation: Boolean?
 
+    var realNode: PsiElement? = null
+    private var hasCheckedRealNode: Boolean = false
+
     private val WHITESPACES = TokenSet.create(
         RakuTokenTypes.UNV_WHITE_SPACE,
         RakuTokenTypes.WHITE_SPACE,
         RakuTokenTypes.VERTICAL_WHITE_SPACE,
         RakuTokenTypes.UNSP_WHITE_SPACE
     )
-    private var children: ArrayList<Block?>? = null
+    private var children: MutableList<Block> = mutableListOf()
 
     constructor(
         node: ASTNode,
@@ -57,36 +65,92 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         isStatementContinuation: Boolean?,
         commonSettings: CommonCodeStyleSettings?,
         customSettings: RakuCodeStyleSettings,
-        rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>
+        rules: MutableMap<RakuSpacingRule, BiFunction<RakuBlock?, RakuBlock?, Spacing?>>,
+        originNode: PsiElement?
     ) : super(node, wrap, align) {
         this@RakuBlock.rules = rules
         this@RakuBlock.commonSettings = commonSettings
         this.settings = customSettings
         this.isStatementContinuation = isStatementContinuation
+        this.realNode = originNode
     }
 
-    override fun buildChildren(): MutableList<Block?>? {
-        if (isLeaf) return EMPTY
+    fun findActualFuckingElement(node: ASTNode): PsiElement? {
+        // Ignore this stupid ass idea of re-formatting an entire file without being fucking invited to do so
+        // (PsiFile is the initial node value, and carets also start at the beginning of files)
+        if (node.psi is PsiFile) return null
 
-        val children = ArrayList<Block?>()
-        val alignFunction = calculateAlignment(myNode)
+        if (realNode != null) return realNode
+        if (hasCheckedRealNode) return null
 
-        var child = node.firstChildNode
+        val editor = PsiEditorUtil.findEditor(node.psi) ?: return null
+
+        println("dispatching to get caret!")
+        // TODO: IntelliJ -> Always use corotuines!
+        //       Also IntelliJ -> Psych! They don't fucking work here
+        val caretOffset = ApplicationManager.getApplication().runReadAction(Computable<Int> {
+            editor.caretModel.currentCaret.offset
+        })
+        println("so post caret lol (caret = $caretOffset)")
+
+        if (caretOffset == 0) return null
+
+        val currentElement = node.psi.findElementAt(caretOffset) ?: return null
+
+//        return currentElement
+
+        println("found the latest element: $currentElement")
+
+        val closestNaturalStopper: PsiElement = PsiTreeUtil.getParentOfType<PsiElement>(
+                    currentElement,
+                    RakuRoutineDecl::class.java,
+                    RakuPackageDecl::class.java
+//                    RakuBlockoid::class.java,
+//                    RakuRoutineDecl::class.java,
+                    // TODO: Any other natural stopping places?
+                ) ?: return currentElement
+
+        println("found the closest stopper: $closestNaturalStopper")
+
+        hasCheckedRealNode = true
+
+        return closestNaturalStopper
+    }
+
+    override fun buildChildren(): MutableList<Block> {
+        if (isLeaf) return mutableListOf()
+
+        val children: MutableList<Block> = mutableListOf<Block>()
+        val alignFunction = calculateAlignment(node)
+
+        this.realNode = findActualFuckingElement(node)
+
+        if (isFuckingRelevant())
+            println("the unchanging realNode = $realNode (offset = ${realNode?.textOffset ?: "NaN" })")
+
+        var child: ASTNode? = node.firstChildNode ?: return children
+
+        if (isFuckingRelevant())
+            println("What child is this: $child\n\t${child!!.elementType}\n\t${child.psi.elementType}" )
+
         while (child != null) {
-            val elementType = child.elementType
+            val elementType: IElementType = child.elementType
             if (WHITESPACES.contains(elementType)) {
                 child = child.treeNext
                 continue
             }
 
+            val fuckingIrrelevantChild = isChildFuckingRelevant(child)
+
             val childBlock: RakuBlock?
             var childIsStatementContinuation: Boolean? = null
             if (isStatementContinuation != null && isStatementContinuation) {
                 childIsStatementContinuation = false
-            } else if (nodeInStatementContinuation(child)) {
+            } else if (!fuckingIrrelevantChild && nodeInStatementContinuation(child, isFuckingRelevant())) {
                 childIsStatementContinuation = true
             }
-            val align = if (alignFunction == null)
+
+            val align = if (alignFunction == null || fuckingIrrelevantChild)
                             null
                         else
                             if (alignFunction.first!!.apply(child) == true)
@@ -99,15 +163,27 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                                    childIsStatementContinuation,
                                    commonSettings,
                                    settings,
-                                   rules)
+                                   rules,
+                                   originNode = realNode)
             childBlock.parent = this
             children.add(childBlock)
             child = child.treeNext
         }
-        return children.also { this.children = it }
+        this.children = children
+
+        if (isFuckingRelevant()) {
+            println("Children! :O")
+            children.forEach { c -> println("\t$c") }
+        }
+
+        return children
     }
 
     override fun getWrap(): Wrap? {
+        this.realNode = findActualFuckingElement(node) ?: return null
+
+        if (isNotFuckingRelevant()) return null
+
         // Basic sanity check: we don't wrap anything when interpolated in a str literal
         if (PsiTreeUtil.getParentOfType<RakuPsiElement?>(
                 myNode.psi,
@@ -165,6 +241,8 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
     }
 
     private fun calculateAlignment(node: ASTNode): Pair<Function<ASTNode?, Boolean?>?, Alignment?>? {
+        this.realNode = findActualFuckingElement(node) ?: return null
+
         val type = node.elementType
         if (type === RakuElementTypes.SIGNATURE && settings.PARAMETER_ALIGNMENT) {
             return Pair.create<Function<ASTNode?, Boolean?>?, Alignment?>(
@@ -195,7 +273,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
                 }
                 // If we have a comma separated list, there can be two cases: non-literal array init or signature
                 // check those cases, otherwise just do as infix guides us
-                val origin = PsiTreeUtil.getParentOfType<PsiElement?>(
+                val origin = PsiTreeUtil.getParentOfType<PsiElement>(
                     infixApp,
                     RakuVariableDecl::class.java,
                     RakuCodeBlockCall::class.java,
@@ -262,15 +340,15 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
     }
 
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
+        this.realNode = findActualFuckingElement(node) ?: return null
+
         if (child1 !is RakuBlock || child2 !is RakuBlock)
             return null
 
-        if (child2.node.elementType === RakuElementTypes.REGEX_SIGSPACE)
+        if (child1.isNotFuckingRelevant() && child2.isNotFuckingRelevant())
             return null
 
-        // Prevent huge re-writing of entire files
-        // TODO: Address this at a lower level
-        if (child1.node.text.lines().size > 11 || child2.node.text.lines().size > 11)
+        if (child2.node.elementType === RakuElementTypes.REGEX_SIGSPACE)
             return null
 
         for (ruleKey in RakuSpacingRule.entries) {
@@ -278,8 +356,8 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             val result = rule.apply(child1, child2)
             if (result != null) {
                 if (DEBUG_MODE) {
-                    System.out.printf("Left: %s [%s]%n", child1.node.elementType, trimText(child1.node.text))
-                    System.out.printf("Right: %s [%s]%n", child2.node.elementType, trimText(child2.node.text))
+                    System.out.printf("Left: %s [%s]%n", child1.node.elementType, child1.node.text)
+                    System.out.printf("Right: %s [%s]%n", child2.node.elementType, child2.node.text)
                     println("Applied rule: $ruleKey\n")
                 }
                 return result
@@ -287,14 +365,16 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         }
 
         if (DEBUG_MODE) {
-            System.out.printf("Left: %s [%s]%n", child1.node.elementType, trimText(child1.node.text))
-            System.out.printf("Right: %s [%s]%n", child2.node.elementType, trimText(child2.node.text))
+            System.out.printf("Left: %s [%s]%n", child1.node.elementType, child1.node.text)
+            System.out.printf("Right: %s [%s]%n", child2.node.elementType, child2.node.text)
             println("==> No rule was applied.\n")
         }
         return null
     }
 
     override fun getIndent(): Indent? {
+        this.realNode = findActualFuckingElement(node) ?: return null
+
         if (myNode.treeParent == null) return null
 
         if (myNode.treeParent.psi is RakuHeredoc) {
@@ -350,17 +430,19 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
     }
 
     override fun getChildAttributes(newIndex: Int): ChildAttributes {
-        val elementType = myNode.elementType
+        this.realNode = findActualFuckingElement(node) ?: return ChildAttributes(null, null)
+
+        val elementType = node.elementType
         if (elementType === RakuElementTypes.REGEX_GROUP || elementType === RakuElementTypes.ARRAY_COMPOSER) {
             return ChildAttributes(Indent.getNormalIndent(), null)
         } else if (elementType === RakuElementTypes.BLOCKOID) {
             var subblocks: MutableList<Block?>?
-            var block = getSubBlocks().get(newIndex - 1)
-            while (block != null) {
+            var block = children[newIndex - 1] as RakuBlock
+            while (block.isFuckingRelevant()) {
                 subblocks = block.subBlocks
                 if (subblocks.isNotEmpty()) {
-                    block = subblocks.last()
-                } else if (block is RakuBlock && block.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT) {
+                    block = subblocks.last() as RakuBlock
+                } else if (block.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT) {
                     return ChildAttributes(Indent.getContinuationIndent(), obtainAlign(block))
                 } else {
                     return ChildAttributes(Indent.getNormalIndent(), null)
@@ -371,9 +453,9 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             return ChildAttributes(Indent.getContinuationIndent(), obtainAlign(this))
         } else if (elementType === RakuElementTypes.METHOD_CALL) {
             return ChildAttributes(Indent.getContinuationIndent(), null)
-        } else if (myNode.psi is RakuPsiDeclaration) {
-            val blocks = getSubBlocks()
-            val block = blocks.get(newIndex - 1)
+        } else if (node.psi is RakuPsiDeclaration) {
+            val blocks = children
+            val block = blocks[newIndex - 1]
             if (block is RakuBlock) {
                 if (block.node.psi is RakuTrait) {
                     return ChildAttributes(Indent.getContinuationIndent(), block.alignment)
@@ -391,8 +473,28 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         return parent
     }
 
-    override fun setParent(newParent: BlockWithParent?) {
+    override fun setParent(newParent: BlockWithParent) {
         parent = newParent
+    }
+
+    fun isChildFuckingRelevant(child: ASTNode): Boolean {
+        if (realNode == null) return false
+
+        val relevantParent = PsiTreeUtil.getParentOfType(
+            child.psi,
+            RakuRoutineDecl::class.java,
+            RakuPackageDecl::class.java
+        ) ?: return false
+
+        return relevantParent.textOffset != realNode!!.textOffset
+    }
+
+    fun isFuckingRelevant(): Boolean {
+        return realNode !is PsiFile && node.psi.textOffset == realNode?.textOffset
+    }
+
+    fun isNotFuckingRelevant(): Boolean {
+        return ! isFuckingRelevant()
     }
 
     companion object {
@@ -408,7 +510,9 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             RakuElementTypes.CONSTANT
         )
 
-        private fun nodeInStatementContinuation(startNode: ASTNode): Boolean {
+        private fun nodeInStatementContinuation(startNode: ASTNode, isNotFuckingRelevant: Boolean): Boolean {
+            if (isNotFuckingRelevant) return false
+
             val startPsi = startNode.psi
             val file = startPsi.containingFile
             if (file == null || !file.isPhysical) return false
@@ -417,11 +521,7 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             if (doc == null) return false
 
             // Check if the node spans over multiple lines, making us want a continuation
-            if (doc.getLineNumber(startPsi.textOffset) == doc.getLineNumber(
-                    startPsi.parent
-                        .textOffset
-                )
-            ) {
+            if (doc.getLineNumber(startPsi.textOffset) == doc.getLineNumber(startPsi.parent.textOffset)) {
                 return false
             }
 
@@ -443,10 +543,11 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
             // Now checking parents
             if (startPsi.parent is RakuInfixApplication) {
                 return !checkIfNonContinuatedInitializer(startPsi)
-            } else if (startPsi.parent is RakuSubCall ||
-                startPsi.parent is RakuSignature ||
-                startPsi.parent is RakuMethodCall ||
-                startPsi.parent is RakuArrayComposer
+            } else if (
+                   startPsi.parent is RakuSubCall
+                || startPsi.parent is RakuSignature
+                || startPsi.parent is RakuMethodCall
+                || startPsi.parent is RakuArrayComposer
             ) {
                 return true
             }
@@ -485,34 +586,35 @@ internal class RakuBlock : AbstractBlock, BlockWithParent {
         }
 
         private fun obtainAlign(block: RakuBlock): Alignment? {
+            if (block.isNotFuckingRelevant()) return null
 
             val elementType = block.node.elementType
             if (elementType === RakuElementTypes.SIGNATURE) {
-                return block.children!!.stream()
-                    .map<Alignment?> { obj: Block? -> obj!!.alignment }
-                    .filter { obj: Alignment? -> Objects.nonNull(obj) }
-                    .findFirst()
-                    .orElse(null)
+                return block.children.firstNotNullOf { obj: Block -> obj.alignment }
             } else if (elementType === RakuOPPElementTypes.INFIX_APPLICATION) {
                 val application = block.node.psi as RakuInfixApplication
-                if (application.getOperator() == "=" && application.getOperands().size == 2 &&
-                    application.getOperands()[1] is RakuInfix
-                ) {
-                    return null
-                } else {
-                    return block.children!!.stream()
-                        .map<Alignment?> { obj: Block? -> obj!!.alignment }
-                        .filter { obj: Alignment? -> Objects.nonNull(obj) }
-                        .findFirst()
-                        .orElse(null)
-                }
+
+                val infixIsAssignment = application.getOperator() == "="
+                                        && application.getOperands().size == 2
+                                        && application.getOperands()[1] is RakuInfix
+
+                return  if (infixIsAssignment) null
+                        else block.children.filter {
+                                    val block = it as? RakuBlock ?: return@filter false
+                                    block.isFuckingRelevant()
+                                }.firstNotNullOf {
+                                    it.alignment
+                                }
             } else if (elementType === RakuElementTypes.UNTERMINATED_STATEMENT) {
                 val base = block.parent as RakuBlock
                 val blocks = base.getSubBlocks()
                 for (i in blocks.indices) {
-                    val temp = blocks.get(i)
+                    val temp = blocks[i] as? RakuBlock ?: continue
+                    if (temp.isNotFuckingRelevant()) continue
+
                     if (temp === block) {
-                        return obtainAlign((blocks.get(i - 1) as RakuBlock?)!!)
+                        val nextBlockToAlign = blocks[i - 1] as? RakuBlock ?: return null
+                        return obtainAlign(nextBlockToAlign)
                     }
                 }
             }

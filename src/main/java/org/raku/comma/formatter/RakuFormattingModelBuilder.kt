@@ -2,7 +2,6 @@ package org.raku.comma.formatter
 
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.tree.TokenSet
@@ -13,7 +12,6 @@ import org.raku.comma.parsing.RakuTokenTypes
 import org.raku.comma.psi.*
 import java.util.function.BiFunction
 
-@InternalIgnoreDependencyViolation
 class RakuFormattingModelBuilder : FormattingModelBuilder {
     var CONSTANT_EMPTY_SPACING: Spacing? = null
     var EMPTY_SPACING: Spacing? = null
@@ -372,6 +370,7 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
             && right.node.treeParent.elementType === RakuElementTypes.ROUTINE_DECLARATION)
                     if (customSettings.ROUTINE_DECL_BRACE_STYLE == 1)
                         SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
+//                SINGLE_LINE_BREAK
             else null
         })
 

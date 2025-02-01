@@ -8,13 +8,11 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionManager
-import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
 import org.raku.comma.parsing.RakuTokenTypes
 import org.raku.comma.psi.*
@@ -23,28 +21,31 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeoutException
 import kotlin.math.min
 
-@InternalIgnoreDependencyViolation
 class RakuSmartEnterProcessor : SmartEnterProcessor() {
     override fun process(project: Project, editor: Editor, psiFile: PsiFile): Boolean {
         if (psiFile !is RakuFile) return false
+
         // Get an element
         val caretModel = editor.caretModel
-        val element = psiFile.findElementAt(caretModel.offset - 1)
-        if (element == null) return false
+        val element = psiFile.findElementAt(caretModel.offset - 1) ?: return false
 
         // we will not do anything if the parser state is broken
         if (element.node.elementType === RakuTokenTypes.BAD_CHARACTER) return false
 
         // Get closest parent statement
-        val statement = PsiTreeUtil.getParentOfType<RakuStatement?>(element, RakuStatement::class.java)
-        if (statement == null) return false
+        var statement = PsiTreeUtil.getParentOfType<RakuStatement?>(element, RakuStatement::class.java)
+            ?: return false
 
-        processEnter(statement, editor, project)
+        statement = PsiTreeUtil.getParentOfType<RakuStatement>(element, RakuStatement::class.java)
+            ?: return false
+
+        processEnter(statement, editor, project, psiFile);
         val plain = PlainEnterProcessor()
         plain.doEnter(editor, psiFile)
 
         val oldLine = editor.document.getLineNumber(editor.caretModel.offset)
-        CodeStyleManager.getInstance(project).reformat(psiFile)
+        // TODO: See if we can re-enable this to some degree?
+//        CodeStyleManager.getInstance(project).reformat(psiFile)
         editor.caretModel.moveToOffset(editor.document.getLineStartOffset(
                         min(
                             (editor.document.lineCount - 1).toDouble(),
@@ -71,27 +72,26 @@ class RakuSmartEnterProcessor : SmartEnterProcessor() {
 
     private val log = Logger.getInstance(RakuSmartEnterProcessor::class.java)
 
-    private fun processEnter(element: RakuStatement, editor: Editor, project: Project) {
+    private fun processEnter(element: RakuStatement, editor: Editor, project: Project, psiFile: RakuFile) {
         // Get a first node of RakuStatement
-        val actualStatement = element.firstChild
-        if (actualStatement == null) return
+        val actualStatement = getStatementAtCaret(editor, psiFile) ?: return
 
-        var lastChildOfStatement = element.lastChild
+        var lastChildOfStatement: PsiElement? = element.lastChild
+        var prevSiblingStatement: PsiElement = lastChildOfStatement ?: return
         // In current version of the parser (2018.10), trailing PsiWhiteSpace and UNV_WHITE_SPACE
         // nodes are included as children of last statement, so we want to skip those
-        while (
-            lastChildOfStatement != null
+        while (lastChildOfStatement != null
             && (lastChildOfStatement is PsiWhiteSpace
                     || lastChildOfStatement.node.elementType === RakuTokenTypes.UNV_WHITE_SPACE)
-        ) lastChildOfStatement = lastChildOfStatement.prevSibling
-
-        val siblingStatement = element.nextSibling
-
-        if (lastChildOfStatement != null && lastChildOfStatement.node
-                .elementType === RakuTokenTypes.STATEMENT_TERMINATOR ||
-            siblingStatement != null && siblingStatement.node
-                .elementType === RakuTokenTypes.STATEMENT_TERMINATOR
         ) {
+            prevSiblingStatement = lastChildOfStatement
+            lastChildOfStatement = lastChildOfStatement.prevSibling
+        }
+
+        val siblingStatement = element.nextSibling ?: return
+
+        if (prevSiblingStatement.node.elementType === RakuTokenTypes.STATEMENT_TERMINATOR
+        || siblingStatement.node.elementType === RakuTokenTypes.STATEMENT_TERMINATOR) {
             // `;` is already added either as part of statement to complete or as a next node, just do Enter
             return
         }
@@ -130,23 +130,22 @@ class RakuSmartEnterProcessor : SmartEnterProcessor() {
     }
 
     private fun processStatement(element: PsiElement, editor: Editor, project: Project) {
-        var lastPiece = element.lastChild
+        var lastPiece: PsiElement? = element.lastChild
 
         // In current version of the parser (2018.10), trailing PsiWhiteSpace and UNV_WHITE_SPACE
         // nodes are included as children of last statement, so we want to skip those,
         // but preserve if some whitespace is actually added at the end,
         // so we could handle it with nice offset setting
-        var saved: PsiElement? = null
+        var saved: PsiElement = lastPiece ?: return
         while (
             lastPiece != null
             && (lastPiece is PsiWhiteSpace || lastPiece.node.elementType === RakuTokenTypes.UNV_WHITE_SPACE)
         ) {
             saved = lastPiece
-            lastPiece = lastPiece.prevSibling
+            lastPiece = lastPiece.prevSibling ?: return
         }
 
-        if (lastPiece == null) return
-        if (saved != null && saved.node.elementType === RakuTokenTypes.UNV_WHITE_SPACE) {
+        if (saved.node.elementType === RakuTokenTypes.UNV_WHITE_SPACE) {
             lastPiece = saved
         }
 
@@ -174,26 +173,31 @@ class RakuSmartEnterProcessor : SmartEnterProcessor() {
         psiDocumentManager.commitDocument(document)
 
         // If element precedes code block
-        if (controlStatementsCheck(lastPiece!!) ||
-            lastPiece is RakuTrait ||
-            lastPiece is RakuRoleSignature ||
-            lastPiece is RakuSignature ||
-            lastPiece is RakuLongName || lastPiece.node.elementType === RakuTokenTypes.NAME
-        ) {
-            if (offsetToJump < 0) offsetToJump = lastPiece.textOffset + lastPiece.textLength
+        if (controlStatementsCheck(lastPiece!!)
+        || lastPiece is RakuTrait
+        || lastPiece is RakuRoleSignature
+        || lastPiece is RakuSignature
+        || lastPiece is RakuLongName
+        || lastPiece.node.elementType === RakuTokenTypes.NAME)
+        {
+            if (offsetToJump < 0) {
+                offsetToJump = lastPiece.textOffset + lastPiece.textLength
+            }
             val whiteSpace: PsiWhiteSpace? = getInnermostRightmostChild(lastPiece)
-            if (whiteSpace != null) offsetToJump -= whiteSpace.textLength
+            if (whiteSpace != null) {
+                offsetToJump -= whiteSpace.textLength
+            }
             editor.document.insertString(offsetToJump, " {\n}")
         } else if (lastPiece is RakuBlockoid) {
             // If code block itself
             processBlockInternals(lastPiece, editor)
         } else {
             // Otherwise, just try to add `;` without duplication
-            val maybeTerminator = element.nextSibling
-            if (maybeTerminator == null || maybeTerminator.node
-                    .elementType !== RakuTokenTypes.STATEMENT_TERMINATOR
-            ) {
-                if (offsetToJump < 0) offsetToJump = lastPiece.textOffset + lastPiece.textLength
+            val maybeTerminator = element.nextSibling ?: return
+            if (maybeTerminator.node.elementType !== RakuTokenTypes.STATEMENT_TERMINATOR) {
+                if (offsetToJump < 0) {
+                    offsetToJump = lastPiece.textOffset + lastPiece.textLength
+                }
                 editor.document.insertString(offsetToJump, ";")
             }
         }
@@ -210,12 +214,12 @@ class RakuSmartEnterProcessor : SmartEnterProcessor() {
 
     private fun controlStatementsCheck(piece: PsiElement): Boolean {
         val pieceParent = piece.parent
-        return pieceParent is RakuIfStatement ||
-                pieceParent is RakuUnlessStatement ||
-                pieceParent is RakuGivenStatement ||
-                pieceParent is RakuWhenStatement ||
-                pieceParent is RakuLoopStatement ||
-                pieceParent is RakuForStatement
+        return pieceParent is RakuIfStatement
+            || pieceParent is RakuUnlessStatement
+            || pieceParent is RakuGivenStatement
+            || pieceParent is RakuWhenStatement
+            || pieceParent is RakuLoopStatement
+            || pieceParent is RakuForStatement
     }
 
     private fun processBlockInternals(piece: PsiElement, editor: Editor) {
