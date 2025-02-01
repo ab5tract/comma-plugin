@@ -119,69 +119,69 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
     ) {
 
         // Nothing between statement and its ;
-        rules.put(RakuSpacingRule.StatementTerminator, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (right!!.node.elementType === RakuTokenTypes.STATEMENT_TERMINATOR)
-                 CONSTANT_EMPTY_SPACING
-            else null
+        rules.put(RakuSpacingRule.StatementTerminator, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (right!!.node.elementType === RakuTokenTypes.STATEMENT_TERMINATOR)
+                             CONSTANT_EMPTY_SPACING
+                        else null
         })
         // Nothing between statement and its absence of ;
-        rules.put(RakuSpacingRule.UnterminatedStatement, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (right!!.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT)
-                 CONSTANT_EMPTY_SPACING
-            else null
+        rules.put(RakuSpacingRule.UnterminatedStatement, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (right!!.node.elementType === RakuElementTypes.UNTERMINATED_STATEMENT)
+                            CONSTANT_EMPTY_SPACING
+                        else null
         })
 
         // In-Parentheses
         rules.put(RakuSpacingRule.BracesParentheses, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
-            if (left!!.node.elementType === RakuTokenTypes.PARENTHESES_OPEN
-                || right!!.node.elementType === RakuTokenTypes.PARENTHESES_CLOSE) {
-                val parent = left.node.treeParent.psi
-                if (parent is RakuSubCall || parent is RakuMethodCall)
-                    if (customSettings.CALL_PARENS_SPACING)
-                         SINGLE_SPACE_SPACING
-                    else EMPTY_SPACING
-                if (customSettings.GROUPING_PARENS_SPACING)
-                     SINGLE_SPACE_SPACING
-                else EMPTY_SPACING
-            }
-            null
+            return@func if (left!!.node.elementType === RakuTokenTypes.PARENTHESES_OPEN
+                        || right!!.node.elementType === RakuTokenTypes.PARENTHESES_CLOSE) {
+                            val parent = left.node.treeParent.psi
+                            if (parent is RakuSubCall || parent is RakuMethodCall)
+                                if (customSettings.CALL_PARENS_SPACING)
+                                     SINGLE_SPACE_SPACING
+                                else EMPTY_SPACING
+                            if (customSettings.GROUPING_PARENS_SPACING)
+                                 SINGLE_SPACE_SPACING
+                            else EMPTY_SPACING
+                        }
+                        else null
         })
 
         // In array braces
-        rules.put(RakuSpacingRule.BracesArray, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (left!!.node.elementType === RakuTokenTypes.ARRAY_COMPOSER_OPEN
-            || right!!.node.elementType === RakuTokenTypes.ARRAY_COMPOSER_CLOSE)
-                if (customSettings.ARRAY_LITERAL_PARENS_SPACING)
-                     SINGLE_SPACE_SPACING
-                else EMPTY_SPACING
-            null
+        rules.put(RakuSpacingRule.BracesArray, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (left!!.node.elementType === RakuTokenTypes.ARRAY_COMPOSER_OPEN
+                        || right!!.node.elementType === RakuTokenTypes.ARRAY_COMPOSER_CLOSE)
+                            if (customSettings.ARRAY_LITERAL_PARENS_SPACING)
+                                 SINGLE_SPACE_SPACING
+                            else EMPTY_SPACING
+                        else null
         })
 
         // Regex group
-        rules.put(RakuSpacingRule.RegexGroup, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (left!!.node.elementType === RakuTokenTypes.REGEX_GROUP_BRACKET_OPEN
-            || right!!.node.elementType === RakuTokenTypes.REGEX_GROUP_BRACKET_CLOSE)
-                if (customSettings.REGEX_GROUP_PARENS_SPACING)
-                     SINGLE_SPACE_SPACING
-                else EMPTY_SPACING
-            null
+        rules.put(RakuSpacingRule.RegexGroup, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (left!!.node.elementType === RakuTokenTypes.REGEX_GROUP_BRACKET_OPEN
+                        || right!!.node.elementType === RakuTokenTypes.REGEX_GROUP_BRACKET_CLOSE)
+                            if (customSettings.REGEX_GROUP_PARENS_SPACING)
+                                 SINGLE_SPACE_SPACING
+                            else EMPTY_SPACING
+                        else null
         })
 
 
         // Regex capture
-        rules.put(RakuSpacingRule.RegexCapture, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (left!!.node.elementType === RakuTokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN
-            || right!!.node.elementType === RakuTokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE)
-                if (customSettings.REGEX_POSITIONAL_PARENS_SPACING) SINGLE_SPACE_SPACING
-                else EMPTY_SPACING
-            null
+        rules.put(RakuSpacingRule.RegexCapture, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (left!!.node.elementType === RakuTokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN
+                        || right!!.node.elementType === RakuTokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE)
+                            if (customSettings.REGEX_POSITIONAL_PARENS_SPACING) SINGLE_SPACE_SPACING
+                            else EMPTY_SPACING
+                        else null
         })
 
         // Nothing inside different types of braces, parens etc. (block ones are handled in line break rules set
-        rules.put(RakuSpacingRule.NothingInsideBraces,  BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (OPENERS.contains(left!!.node.elementType) || CLOSERS.contains(right!!.node.elementType))
-                EMPTY_SPACING
-            else null
+        rules.put(RakuSpacingRule.NothingInsideBraces,  BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (OPENERS.contains(left!!.node.elementType) || CLOSERS.contains(right!!.node.elementType))
+                            EMPTY_SPACING
+                        else null
         })
 
         // Comma operator, a space after one if it's not a dangling one
@@ -198,24 +198,23 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
             else null
         })
         // Comma operator, nothing before one
-        rules.put(RakuSpacingRule.OperatorCommaNothingBefore, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (right!!.node.elementType === RakuElementTypes.INFIX
-            && right.node.text == ",")
-                if (customSettings.BEFORE_COMMA)
-                     SINGLE_SPACE_SPACING
-                else CONSTANT_EMPTY_SPACING
-            else null
+        rules.put(RakuSpacingRule.OperatorCommaNothingBefore, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (right!!.node.elementType === RakuElementTypes.INFIX && right.node.text == ",")
+                            if (customSettings.BEFORE_COMMA)
+                                 SINGLE_SPACE_SPACING
+                            else CONSTANT_EMPTY_SPACING
+                        else null
         })
 
         // Fatarrow
-        rules.put(RakuSpacingRule.FatArrow, BiFunction { left: RakuBlock?, right: RakuBlock? ->
+        rules.put(RakuSpacingRule.FatArrow, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
             val after  = left!!.node.elementType === RakuTokenTypes.INFIX && left.node.text == "=>"
             val before = right!!.node.elementType === RakuTokenTypes.INFIX && right.node.text == "=>"
-            if ((after && customSettings.AFTER_FATARROW)
-            || (before && customSettings.BEFORE_FATARROW))
-                SINGLE_SPACE_SPACING
-            else
-                (if (before || after) CONSTANT_EMPTY_SPACING else null)
+            return@func if ((after && customSettings.AFTER_FATARROW)
+                        || (before && customSettings.BEFORE_FATARROW))
+                            SINGLE_SPACE_SPACING
+                        else
+                            if (before || after) CONSTANT_EMPTY_SPACING else null
         })
 
         // No excessive whitespace around trait
@@ -356,48 +355,53 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
     ) {
         /** Brace style related rules  */
         // Brace style for package
-        rules.put(RakuSpacingRule.BraceStylePackage, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (right!!.node.elementType === RakuElementTypes.BLOCKOID
-            && right.node.treeParent.elementType === RakuElementTypes.PACKAGE_DECLARATION)
-                    if (customSettings.PACKAGE_DECL_BRACE_STYLE == 1)
-                        SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
-            else null
+        rules.put(RakuSpacingRule.BraceStylePackage, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (right!!.node.elementType === RakuElementTypes.BLOCKOID
+                        && right.node.treeParent.elementType === RakuElementTypes.PACKAGE_DECLARATION)
+                                if (customSettings.PACKAGE_DECL_BRACE_STYLE == 1)
+                                    SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
+                        else null
         })
 
         // Brace style for routine
-        rules.put(RakuSpacingRule.BraceStyleRoutine, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (right!!.node.elementType === RakuElementTypes.BLOCKOID
-            && right.node.treeParent.elementType === RakuElementTypes.ROUTINE_DECLARATION)
-                    if (customSettings.ROUTINE_DECL_BRACE_STYLE == 1)
-                        SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
-//                SINGLE_LINE_BREAK
-            else null
+        rules.put(RakuSpacingRule.BraceStyleRoutine, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (right!!.node.elementType === RakuElementTypes.BLOCKOID
+                        && right.node.treeParent.elementType === RakuElementTypes.ROUTINE_DECLARATION)
+                            if (customSettings.ROUTINE_DECL_BRACE_STYLE == 1)
+                                SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
+                        else null
         })
 
         // Brace style for regex
-        rules.put(RakuSpacingRule.BraceStyleRegex, BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if (right!!.node.elementType === RakuElementTypes.BLOCKOID
-            && right.node.treeParent.elementType === RakuElementTypes.REGEX_DECLARATION)
-                    if (customSettings.REGEX_DECL_BRACE_STYLE == 1)
-                        SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
-            else null
+        rules.put(RakuSpacingRule.BraceStyleRegex, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if (right!!.node.elementType === RakuElementTypes.BLOCKOID
+                        && right.node.treeParent.elementType === RakuElementTypes.REGEX_DECLARATION)
+                                if (customSettings.REGEX_DECL_BRACE_STYLE == 1)
+                                     SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK
+                        else null
         })
 
         // Brace style for phasers and everything else
         rules.put(RakuSpacingRule.BraceStylePhasersEtc,  BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
             if (PsiTreeUtil.getParentOfType<RakuPsiElement?>(
-                    right!!.node.psi, RakuQuoteRegex::class.java, RakuRegexDecl::class.java,
-                    RakuStatement::class.java, RakuStrLiteral::class.java, RakuHeredoc::class.java
+                    right!!.node.psi,
+                    RakuQuoteRegex::class.java,
+                    RakuRegexDecl::class.java,
+                    RakuStatement::class.java,
+                    RakuStrLiteral::class.java,
+                    RakuHeredoc::class.java
                 ) !is RakuStatement
             ) return@func null
-            if (right.node.elementType === RakuElementTypes.BLOCK)
-                (if (right.node.treeParent.elementType === RakuElementTypes.PHASER)
-                    (if     (customSettings.PHASER_BRACE_STYLE == 1)
-                        SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK)
-                else
-                    (if     (customSettings.OTHER_BRACE_STYLE == 1)
-                        SINGLE_SPACE_SPACING else SINGLE_LINE_BREAK))
-            else null
+
+            return@func if (right.node.elementType === RakuElementTypes.BLOCK)
+                            if (right.node.treeParent.elementType === RakuElementTypes.PHASER)
+                                if (customSettings.PHASER_BRACE_STYLE == 1)
+                                     SINGLE_SPACE_SPACING
+                                else SINGLE_LINE_BREAK
+                        else if (customSettings.OTHER_BRACE_STYLE == 1)
+                                  SINGLE_SPACE_SPACING
+                             else SINGLE_LINE_BREAK
+                        else null
         })
 
         rules.put(RakuSpacingRule.BraceStyleEtc, BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
@@ -414,10 +418,14 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
             val blockoid = left.node.treeParent
             if (blockoid.elementType === RakuElementTypes.BLOCKOID) {
                 val source: PsiElement? = PsiTreeUtil.getParentOfType<RakuPsiElement?>(
-                    blockoid.psi, RakuPackageDecl::class.java,
-                    RakuRoutineDecl::class.java, RakuRegexDecl::class.java,
-                    RakuPointyBlock::class.java, RakuStatement::class.java,
-                    RakuBlockOrHash::class.java, org.raku.comma.psi.RakuBlock::class.java
+                    blockoid.psi,
+                    RakuPackageDecl::class.java,
+                    RakuRoutineDecl::class.java,
+                    RakuRegexDecl::class.java,
+                    RakuPointyBlock::class.java,
+                    RakuStatement::class.java,
+                    RakuBlockOrHash::class.java,
+                    org.raku.comma.psi.RakuBlock::class.java
                 )
                 val inner: PsiElement? = PsiTreeUtil.getChildOfAnyType<RakuPsiElement?>(
                     blockoid.psi,
@@ -471,12 +479,13 @@ class RakuFormattingModelBuilder : FormattingModelBuilder {
     }
 
     private fun semiListRule(): BiFunction<RakuBlock?, RakuBlock?, Spacing?> {
-        return BiFunction { left: RakuBlock?, right: RakuBlock? ->
-            if ((STATEMENTS.contains(left!!.node.elementType)
-            || STATEMENTS.contains(right!!.node.elementType))
-            && !(left.node.treeParent.elementType === RakuElementTypes.SEMI_LIST
-            || right!!.node.treeParent.elementType === RakuElementTypes.SEMI_LIST))
-                    SINGLE_LINE_BREAK else null
+        return BiFunction func@{ left: RakuBlock?, right: RakuBlock? ->
+            return@func if ((STATEMENTS.contains(left!!.node.elementType)
+                        || STATEMENTS.contains(right!!.node.elementType))
+                        && !(left.node.treeParent.elementType === RakuElementTypes.SEMI_LIST
+                        || right!!.node.treeParent.elementType === RakuElementTypes.SEMI_LIST))
+                                SINGLE_LINE_BREAK
+                        else null
         }
     }
 }
