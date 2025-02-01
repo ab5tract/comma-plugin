@@ -212,7 +212,7 @@ intellijPlatform {
     pluginConfiguration {
         id = "org.raku.comma"
         name = "Raku"
-        version = safeDetermineCurrentRakuBetaPluginVersion(determineCurrentGitBranch())
+        version = gitCurrentRakuBetaPluginVersion()
 
         ideaVersion {
             sinceBuild = "242"
