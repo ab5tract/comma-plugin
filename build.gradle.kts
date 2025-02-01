@@ -20,8 +20,9 @@ fun formatBranch(
     format: String = "%s"
 ) = if (gitBranch != "main") format.format(gitBranch) else ""
 
-val ideaBuildVersion = File(".versions/idea-version").readText(Charsets.UTF_8)
+val ideaBuildVersion = File("${project.projectDir.path}/.versions/idea-version").readText(Charsets.UTF_8)
 
+// In GitHub Actions we pass the current tag (aka the version) via a property
 fun versionFromPropertyPossibly(): String {
     if (project.hasProperty("pluginVersion")) {
         return project.property("pluginVersion").toString()
@@ -47,7 +48,7 @@ fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String 
     return when(betaVersionPath.exists()) {
         true  -> betaVersionPath.toFile().readText().trim()
         false -> {
-            val idea = File(".versions/idea-version").readText(Charsets.UTF_8)
+            val idea = File("${project.projectDir.path}/.versions/idea-version").readText(Charsets.UTF_8)
             "$idea-beta${formatBranch(currentGitBranch, "(%s)") }.1"
         }
     }
