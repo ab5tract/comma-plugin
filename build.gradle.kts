@@ -35,7 +35,7 @@ fun gitCurrentRakuBetaPluginVersion(): String {
 }
 
 fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String {
-    val betaVersionPath = Path(".versions/raku-beta-version${ formatBranch(currentGitBranch, ".%s") }")
+    val betaVersionPath = Path("${project.projectDir.path}/.versions/raku-beta-version${ formatBranch(currentGitBranch, ".%s") }")
 
     return when(betaVersionPath.exists()) {
         true  -> betaVersionPath.toFile().readText().trim()
@@ -48,7 +48,10 @@ fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String 
 
 abstract class IdeaVersionTask : DefaultTask() {
     @Input
-    val ideaFileName: String = ".versions/idea-version"
+    val basePath: String = project.projectDir.path
+
+    @Input
+    val ideaFileName: String = "$basePath/.versions/idea-version"
 
     @InputFile
     val ideaVersionFile = File(ideaFileName)
@@ -62,8 +65,13 @@ abstract class IdeaVersionTask : DefaultTask() {
     }
 }
 
-data class RakuPluginBetaVersion(val idea: String, val beta: Int, val branch: String) {
-    fun fileName(): String = ".versions/raku-beta-version${ maybeBranch(".%s") }"
+data class RakuPluginBetaVersion(
+    val idea: String,
+    val beta: Int,
+    val branch: String,
+    val basePath: String
+) {
+    fun fileName(): String = "$basePath/.versions/raku-beta-version${ maybeBranch(".%s") }"
     fun maybeBranch(format: String = "%s") = if (branch != "main") format.format(branch) else ""
 
     override fun toString(): String = "$idea-beta${ maybeBranch("(%s)") }.$beta"
@@ -84,9 +92,10 @@ abstract class FetchGitTagRakuPluginBetaVersion : IdeaVersionTask() {
 
     fun determinePluginVersion(version: Int): RakuPluginBetaVersion
                 =   RakuPluginBetaVersion(
-                        idea   = ideaVersion,
-                        beta   = version,
-                        branch = gitBranch.get())
+                        idea     = ideaVersion,
+                        beta     = version,
+                        branch   = gitBranch.get(),
+                        basePath = basePath)
 
     @TaskAction
     override fun action() {
@@ -113,7 +122,8 @@ abstract class GetRakuPluginBetaVersion : IdeaVersionTask() {
                 =   RakuPluginBetaVersion(
                         idea   = ideaVersion,
                         beta   = version,
-                        branch = gitBranch.get())
+                        branch = gitBranch.get(),
+                        basePath = basePath)
 
     @TaskAction
     override fun action() {
@@ -131,8 +141,9 @@ abstract class BumpRakuPluginBetaVersion: GetRakuPluginBetaVersion() {
         val newPluginVersion = when (ideaVersion == oldPluginVersion.idea) {
             true  -> RakuPluginBetaVersion(oldPluginVersion.idea,
                                            oldPluginVersion.beta + 1,
-                                           gitBranch.get())
-            false -> RakuPluginBetaVersion(ideaVersion, 1, gitBranch.get())
+                                           gitBranch.get(),
+                                           basePath)
+            false -> RakuPluginBetaVersion(ideaVersion, 1, gitBranch.get(), basePath)
         }
 
         betaVersionFile.get().writeText(newPluginVersion.toString())
