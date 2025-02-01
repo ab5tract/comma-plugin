@@ -22,6 +22,13 @@ fun formatBranch(
 
 val ideaBuildVersion = File(".versions/idea-version").readText(Charsets.UTF_8)
 
+fun versionFromPropertyPossibly(): String {
+    if (project.hasProperty("pluginVersion")) {
+        return project.property("pluginVersion").toString()
+    }
+    return safeDetermineCurrentRakuBetaPluginVersion(determineCurrentGitBranch())
+}
+
 fun determineCurrentGitBranch(): String {
     return  providers.exec {
                      commandLine("git", "branch", "--show-current")
@@ -192,7 +199,7 @@ plugins {
 }
 
 group   = properties("pluginGroup")
-version = safeDetermineCurrentRakuBetaPluginVersion(determineCurrentGitBranch())
+version = versionFromPropertyPossibly()
 // Configure project's dependencies
 repositories {
     mavenCentral()
@@ -212,7 +219,7 @@ intellijPlatform {
     pluginConfiguration {
         id = "org.raku.comma"
         name = "Raku"
-        version = gitCurrentRakuBetaPluginVersion()
+        version = versionFromPropertyPossibly()
 
         ideaVersion {
             sinceBuild = "242"

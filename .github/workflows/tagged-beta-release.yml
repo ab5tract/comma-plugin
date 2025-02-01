@@ -25,7 +25,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v4
 
     - name: Build with Gradle
-      run: ./gradlew buildPlugin
+      run: ./gradlew buildPlugin -PpluginVersion=${{ github.ref_name }}
 
     - name: Press a release on GitHub with the downloadable .zip
       uses: ncipollo/release-action@v1
