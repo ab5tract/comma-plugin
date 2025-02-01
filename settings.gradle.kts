@@ -1,1 +1,1 @@
-rootProject.name = "comma"
+rootProject.name = "raku-plugin"
