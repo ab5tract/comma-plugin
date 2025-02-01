@@ -59,7 +59,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
 
-    <postFormatProcessor implementation="org.raku.comma.formatter.RakuFormatPostprocessor"/>
+<!--    <postFormatProcessor implementation="org.raku.comma.formatter.RakuFormatPostprocessor"/>-->
     <fileType name="Raku Script" language="Raku" implementationClass="org.raku.comma.filetypes.RakuScriptFileType"
               fieldName="INSTANCE"
               extensions="p6;pl6;raku"/>
