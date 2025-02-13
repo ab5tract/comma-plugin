@@ -188,9 +188,9 @@ plugins {
     // Java support
     id("java")
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij.platform") version "2.0.1"
+    id("org.jetbrains.intellij.platform") version "2.2.1"
 
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.0.20"
 }
 
@@ -218,7 +218,7 @@ intellijPlatform {
         version = versionFromPropertyPossibly()
 
         ideaVersion {
-            sinceBuild = "242"
+            sinceBuild = "242.0"
         }
     }
 
@@ -227,7 +227,7 @@ intellijPlatform {
             select {
                 types = listOf(IntelliJPlatformType.values().toList().random())
                 channels = listOf(ProductRelease.Channel.RELEASE)
-                sinceBuild = "242"
+                sinceBuild = "242.0"
             }
         }
     }
@@ -241,7 +241,6 @@ dependencies {
 
         pluginVerifier()
         zipSigner()
-        instrumentationTools()
     }
     implementation(files("libs/xchart-3.8.0.jar"))
     implementation(files("libs/moarvmremote.jar"))
@@ -252,10 +251,4 @@ dependencies {
     implementation("org.json:json:20240303")
     // TODO: Remove this due to multiple unpatch CVEs
     implementation("org.tap4j:tap4j:4.4.2")
-}
-
-tasks {
-    instrumentCode {
-        formsDirs = files("src/main/org/raku/comma/project/projectWizard/components")
-    }
 }
