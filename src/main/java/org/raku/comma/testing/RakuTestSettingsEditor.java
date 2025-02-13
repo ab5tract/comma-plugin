@@ -1,6 +1,7 @@
 package org.raku.comma.testing;
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent;
+import com.intellij.ide.util.DirectoryChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -10,7 +11,9 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.RawCommandLineEditor;
@@ -130,27 +133,31 @@ public class RakuTestSettingsEditor extends SettingsEditor<RakuTestRunConfigurat
         myModuleNameField.setModel(new RakuModuleModel(myProject));
 
         myDirectoryPathField = new TextFieldWithBrowseButton();
+        var folderChooser = new FileChooserDescriptor(
+            false, true, false, false, false, false
+        );
         myDirectoryPathField.addBrowseFolderListener(
-            "Select Directory", null, myProject,
-            new FileChooserDescriptor(
-                false, true, false, false, false, false
-            ));
+            new TextBrowseFolderListener(folderChooser, myProject)
+        );
+
 
         myFilePatternField = new JTextField();
         PromptSupport.setPrompt("unit-*;integration-*-32bit", myFilePatternField);
 
         myFilePathField = new TextFieldWithBrowseButton();
-        myFilePathField.addBrowseFolderListener(
-            "Select Test File", null, myProject,
-            new FileChooserDescriptor(
+
+
+        Condition<VirtualFile> fileFilter = file ->
+                   file.isDirectory()
+                || file.getExtension() == null
+                || Arrays.asList("t", "t6", "rakutest").contains(file.getExtension());
+
+        var fileChooserDescriptor = new FileChooserDescriptor(
                 true, false, false, false, false, false
-            ) {
-                @Override
-                public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-                    return file.isDirectory() || file.getExtension() == null
-                           || Arrays.asList("t", "t6", "rakutest").contains(file.getExtension());
-                }
-            }
+        ).withFileFilter(fileFilter);
+
+        myFilePathField.addBrowseFolderListener(
+            new TextBrowseFolderListener(fileChooserDescriptor, myProject)
         );
 
         myDegreeField = new JTextField(String.valueOf(1)) {
