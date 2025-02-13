@@ -6,8 +6,10 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.PanelWithAnchor;
@@ -37,6 +39,10 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
     private JCheckBox toStartSuspended;
     private RawCommandLineEditor myRakuParametersPanel;
     private JBList<String> myLogTimelineOptions;
+    private TextBrowseFolderListener browseFolderListener;
+
+    // TODO: Centralize this
+    private Set<String> fileExtensions = Set.of("pm6", "pl6", "p6", "t", "rakumod", "raku", "rakutest", "rakudoc");
 
     RakuRunSettingsEditor(Project project) {
         super();
@@ -122,20 +128,19 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
 
     @NotNull
     protected JComponent getMainTab() {
-        FileChooserDescriptor chooserDescriptor = new FileChooserDescriptor(
-                true, false,
-                false, false,
-                false, false)
-        {
-            @Override
-            public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-                return file.isDirectory() ||
-                        file.getExtension() == null
-                        ||
-                        Arrays.asList("pm6", "pl6", "p6", "t", "rakumod", "raku", "rakutest", "rakudoc", "")
-                              .contains(file.getExtension());
-            }
-        };
+        if (browseFolderListener == null) {
+            var chooserDescriptor = new FileChooserDescriptor(
+                    true, false,
+                    false, false,
+                    false, false
+            ).withFileFilter(file ->
+                   file.isDirectory()
+                || file.getExtension() == null
+                || fileExtensions.contains(file.getExtension()));
+
+            browseFolderListener = new TextBrowseFolderListener(chooserDescriptor, myProject);
+        }
+
         myParams = new CommonProgramParametersPanel() {
             private LabeledComponent<?> myFileComponent;
             private LabeledComponent<RawCommandLineEditor> myRakuParametersComponent;
@@ -144,10 +149,7 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
             @Override
             protected void addComponents() {
                 fileField = new TextFieldWithBrowseButton();
-                fileField.addBrowseFolderListener("Select Script",
-                                                  null,
-                                                  myProject,
-                                                  chooserDescriptor);
+                fileField.addBrowseFolderListener(browseFolderListener);
                 myFileComponent = LabeledComponent.create(fileField, "Script", BorderLayout.WEST);
                 add(myFileComponent);
                 super.addComponents();
