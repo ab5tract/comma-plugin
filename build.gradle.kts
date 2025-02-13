@@ -225,10 +225,9 @@ intellijPlatform {
     pluginVerification {
         ides {
             select {
-                types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
-                channels = listOf(ProductRelease.Channel.EAP)
+                types = listOf(IntelliJPlatformType.values().toList().random())
+                channels = listOf(ProductRelease.Channel.RELEASE)
                 sinceBuild = "242"
-//                version = ideaBuildVersion
             }
         }
     }
