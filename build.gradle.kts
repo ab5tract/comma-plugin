@@ -1,9 +1,4 @@
 
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import kotlin.io.path.Path
@@ -230,9 +225,10 @@ intellijPlatform {
     pluginVerification {
         ides {
             select {
-                types = listOf(IntelliJPlatformType.values().toList().random())
-                channels = listOf(ProductRelease.Channel.RELEASE)
+                types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
+                channels = listOf(ProductRelease.Channel.EAP)
                 sinceBuild = "242"
+//                version = ideaBuildVersion
             }
         }
     }
@@ -240,8 +236,8 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity(ideaBuildVersion)
-
+//        intellijIdeaCommunity(ideaBuildVersion)
+        create("IC", "251.20015.29")
         bundledPlugin("com.intellij.java")
 
         pluginVerifier()
