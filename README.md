@@ -10,11 +10,13 @@ available for download [here](https://www.jetbrains.com/idea/download/) (scroll 
 
 ### Install
 
-1) Download `comma-2.0.zip` from the latest [release](https://github.com/ab5tract/comma-plugin/releases)
-2) Open `Settings > Plugins` in IntelliJ IDEA and find the gear icon, then select `Install plugin from disk` from the
-subsequent menu.
-3) Restart the IDE
-4) Enjoy!
+1) Download `raku-plugin.zip` from the latest [release](https://github.com/ab5tract/comma-plugin/releases)
+2) Open `Settings > Plugins` in IntelliJ IDEA and find the gear icon
+   - select `Install plugin from disk` from the subsequent menu.
+   - navigate to where `raku-plugin.zip` was downloaded (no need to extract or copy the file anywhere)
+   - select `raku-plugin.zip`.
+4) Restart the IDE
+5) Enjoy!
 
 ### Build
 
