@@ -4,14 +4,9 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.util.PsiTreeUtil
-import org.raku.comma.RakuIcons
+import com.intellij.util.containers.toArray
 import org.raku.comma.extensions.RakuFrameworkCall
 import org.raku.comma.psi.*
-import java.lang.String
-import javax.swing.Icon
-import kotlin.Array
-import kotlin.Boolean
-import kotlin.IllegalArgumentException
 
 class RakuStructureViewElement : StructureViewTreeElement {
     private val element: RakuPsiElement
@@ -45,121 +40,24 @@ class RakuStructureViewElement : StructureViewTreeElement {
             val extensions = RakuFrameworkCall.EP_NAME.extensions
             collectFrameworkCalls(structureElements, extensions, declSet, element)
         }
-        return structureElements.toArray<StructureViewTreeElement?>(StructureViewTreeElement.EMPTY_ARRAY)
+        return structureElements.toArray<TreeElement?>(StructureViewTreeElement.EMPTY_ARRAY as Array<TreeElement?>)
     }
 
     override fun getPresentation(): ItemPresentation {
         if (calculatedPresentation != null) return calculatedPresentation
 
-        if (element is RakuFile) {
-            return object : ItemPresentation {
-                override fun getPresentableText(): String? {
-                    return element.getContainingFile().getName()
-                }
+        return when (element) {
+            is RakuFile         -> rakuFileStructureElement(element)
+            is RakuPackageDecl  -> rakuPackageDeclStructureElement(element)
+            is RakuRegexDecl    -> rakuRegexDeclStructureElement(element)
+            is RakuRoutineDecl  -> rakuRoutineDeclStructureElement(element)
+            is RakuConstant     -> rakuConstantStructureElement(element)
+            is RakuVariableDecl -> rakuVariableDeclStructureElement(element)
+            is RakuSubset       -> rakuSubsetStructureElement(element)
+            is RakuEnum         -> rakuEnumStructureElement(element)
 
-                override fun getLocationString(): String? {
-                    return null
-                }
-
-                override fun getIcon(b: Boolean): Icon? {
-                    return RakuIcons.CAMELIA
-                }
-            }
+            else                -> throw IllegalArgumentException()
         }
-        if (element is RakuPackageDecl) return object : ItemPresentation {
-            override fun getPresentableText(): String? {
-                val pkg = element
-                return pkg.getPackageName()
-            }
-
-            override fun getLocationString(): String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                return RakuIcons.iconForPackageDeclarator(element.getPackageKind())
-            }
-        }
-        if (element is RakuRegexDecl) return object : ItemPresentation {
-            override fun getPresentableText(): String? {
-                return element.getSignature()
-            }
-
-            override fun getLocationString(): String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                return RakuIcons.REGEX
-            }
-        }
-        if (element is RakuRoutineDecl) return object : ItemPresentation {
-            override fun getPresentableText(): String? {
-                return element.getSignature()
-            }
-
-            override fun getLocationString(): String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                if (element.getRoutineKind() == "method") return RakuIcons.METHOD
-                return RakuIcons.SUB
-            }
-        }
-        if (element is RakuConstant) return object : ItemPresentation {
-            override fun getPresentableText(): String? {
-                return element.getConstantName()
-            }
-
-            override fun getLocationString(): String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                return RakuIcons.CONSTANT
-            }
-        }
-        if (element is RakuVariableDecl) return object : ItemPresentation {
-            override fun getPresentableText(): String? {
-                return String.join(", ", *element.getVariableNames())
-            }
-
-            override fun getLocationString(): kotlin.String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                return RakuIcons.ATTRIBUTE
-            }
-        }
-        if (element is RakuSubset) return object : ItemPresentation {
-            override fun getPresentableText(): kotlin.String? {
-                return element.getSubsetName()
-            }
-
-            override fun getLocationString(): kotlin.String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                return RakuIcons.SUBSET
-            }
-        }
-        if (element is RakuEnum) return object : ItemPresentation {
-            override fun getPresentableText(): kotlin.String? {
-                return element.getEnumName()
-            }
-
-            override fun getLocationString(): kotlin.String? {
-                return null
-            }
-
-            override fun getIcon(b: Boolean): Icon? {
-                return RakuIcons.ENUM
-            }
-        }
-        throw IllegalArgumentException()
     }
 
     override fun getValue(): RakuPsiElement {
