@@ -15,7 +15,7 @@ fun formatBranch(
     format: String = "%s"
 ) = if (gitBranch != "main") format.format(gitBranch) else ""
 
-val ideaBuildVersion = File("${project.projectDir.path}/.versions/idea-version").readText(Charsets.UTF_8)
+val ideaBuildVersion = File("${project.projectDir.path}/.versions/idea-version").readText(Charsets.UTF_8).trimEnd()
 
 // In GitHub Actions we pass the current tag (aka the version) via a property
 fun versionFromPropertyPossibly(): String {
@@ -43,8 +43,8 @@ fun safeDetermineCurrentRakuBetaPluginVersion(currentGitBranch: String): String 
     return when(betaVersionPath.exists()) {
         true  -> betaVersionPath.toFile().readText().trim()
         false -> {
-            val idea = File("${project.projectDir.path}/.versions/idea-version").readText(Charsets.UTF_8)
-            "$idea-beta${formatBranch(currentGitBranch, "(%s)") }.1"
+            val idea = File("${project.projectDir.path}/.versions/idea-version").readText(Charsets.UTF_8).trimEnd()
+            "$idea-beta${ formatBranch(currentGitBranch, "(%s)") }.1"
         }
     }
 }
@@ -60,7 +60,7 @@ abstract class IdeaVersionTask : DefaultTask() {
     val ideaVersionFile = File(ideaFileName)
 
     @Input
-    val ideaVersion: String = ideaVersionFile.readText()
+    val ideaVersion: String = ideaVersionFile.readText().trimEnd()
 
     @TaskAction
     open fun action() {
@@ -89,6 +89,7 @@ abstract class FetchGitTagRakuPluginBetaVersion : IdeaVersionTask() {
     val gitTag: Property<String> = project.objects.property<String>()
 
     @Internal
+    // TODO|XXX : this will break for beta releases > 10
     val version = gitTag.map { it.last().digitToInt() }
     @Internal
     val pluginBetaVersion: Provider<RakuPluginBetaVersion> = version.map { determinePluginVersion(it) }
@@ -188,7 +189,7 @@ plugins {
     // Java support
     id("java")
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij.platform") version "2.2.1"
+    id("org.jetbrains.intellij.platform") version "2.3.0"
 
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.0.20"
@@ -235,8 +236,8 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-//        intellijIdeaCommunity(ideaBuildVersion)
-        create("IC", "251.20015.29")
+        intellijIdeaCommunity(ideaBuildVersion)
+//        create("IC", "251.26094.121")
         bundledPlugin("com.intellij.java")
 
         pluginVerifier()
