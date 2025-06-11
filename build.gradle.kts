@@ -189,7 +189,7 @@ plugins {
     // Java support
     id("java")
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij.platform") version "2.3.0"
+    id("org.jetbrains.intellij.platform") version "2.6.0"
 
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.0.20"
