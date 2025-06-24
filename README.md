@@ -1,12 +1,20 @@
-# Comma
-## The Raku IDE plugin for IntellIj IDEA
+# Raku IntelliJ Plugin
+## RIP - a Raku plugin for IntelliJ IDEs
 
-This is a continuation of the work done by the fine folks at Edument[^discontinuation] to build and support
-an IDE for Raku. The standalone mode is off the table for the moment, but running as a plugin
-in `IntelliJ IDEA` is fully supported.
+This is a continuation of the work done by the fine folks at Edument[^discontinuation] to build and support Comma,
+an IDE for Raku. They were kind enough to release the source code, which is how we have RIP now.
+
+Unfortunately the standalone mode is off the table for the moment, as JetBrains do not provide any guidance or documentation
+on how to currently build a standalone version. Howver running as a plugin is fully supported
+inside of `IntelliJ IDEA` or any of the IntelliJ IDEs.
 
 It is now built with `Gradle IntelliJ Platform Plugin 2.0` and requires IntelliJ IDEA version `2024.2` or later, 
 available for download [here](https://www.jetbrains.com/idea/download/) (scroll down for the free Community edition).
+
+### Notice to existing Comma users
+
+The project structures have changed between Comma and RIP. Pains have been taken such that the plugin will automtically
+resolve this issue, however _it is a good idea for any Comma users to clear their IDE's cache_ for good measure.
 
 ### Install
 
