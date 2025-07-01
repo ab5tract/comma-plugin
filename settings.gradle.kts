@@ -1,1 +1,1 @@
-rootProject.name = "raku-plugin"
+rootProject.name = "raku-intellij-plugin"
